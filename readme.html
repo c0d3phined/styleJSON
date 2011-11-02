@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<title>styleJSON - Readme</title>
+
+		<style type="text/css">
+
+			*, html { font-family: Arial; }
+
+			.heading { margin-top:20px; font-size: 22px; margin-left: 15px; }
+			.text { font-size: 13px;  }
+			.bugnum { font-weight:bold; font-size: 14px; }
+
+			ul {
+				margin: 20px auto 0 auto;
+				width: 90%;
+				list-style-type: lower-roman;
+				list-style-position: outside;
+			}
+				ul li {
+					margin: 10px 0;
+					padding: 5px 20px 0 5px;
+				}
+
+			td {
+				padding: 10px 15px;
+			}
+
+			table {
+				border: 0 solid #000;
+				margin: 0 auto;
+				width: 90%;
+				height: 100%;
+			}
+				table caption {
+					margin-top: 25px;
+					float: left;
+					position: relative;
+					font-size: 20px;
+					font-weight: bold;
+				}
+				table thead {
+					margin: 15px 0;
+				}
+					table thead tr {
+						margin: 15px 0;
+						padding: 5px 5px;
+					}
+						table thead tr td {
+							font-size: 24px;
+							font-weight: bold;
+							padding-left: 100px;
+							border-bottom: 1px solid #000;
+						}
+							table thead tr td span.small {
+								padding-right: 100px;
+								vertical-align: bottom;
+								position: relative;
+								float: right;
+								font-weight: normal;
+								font-size: 12px;
+							}
+				table tbody {
+					margin-top: 20px;
+					font-size: 14px;
+				}
+					table tbody tr {
+						margin: 10px 5px;
+						padding: 5px 5px;
+					}
+						table tbody tr td {
+						}
+		</style>
+	</head>
+	<body>
+
+		<table>
+			<thead>
+				<tr>
+					<td>styleJSON Readme<span class="small">styleJSON was created by Daniel Brooks.</span></td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<div class="text">
+							These are some features that will appear in the next release.
+						</div>
+						<div class="heading">TODO:</div><br />
+						<ul>
+							<li>
+								better documentation. ( coming soon ) 
+							</li>
+							<li>
+								BUGFIX 001: if multiple elements matched by the jQuery selector engine, styleJSON will make the amount of GET requests that the selector engine matched.
+								In other words, if styleJSON was applied on 3 <code>div</code>'s elements, the plugin will initiate 3 GET requests.
+							</li>
+							<li>
+								automatic parsing of Date strings (ex: /Date(1314151709000)/ ) into the required format.
+							</li>
+							<li>
+								added ability to customize the default HTML elements generated from the data-source. 
+							</li>
+							<li>
+								added ability to customize the classes that are given to the HTML elements generated from the data-source. 
+							</li>
+							<li>
+								multiple classes support. 
+							</li>
+							<li>
+								general tune-up of the algorithm. 
+							</li>
+							<li>
+								jQuery independent version in the works. 
+							</li>
+						</ul>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<br/>
+
+		<table>
+			<caption>Known Bugs</caption>
+			<tbody>
+				<tr>
+					<td>
+						<div class="text">
+							
+						</div>
+						<div class="heading">TODO:</div><br />
+						<ul>
+							<li>
+								<span class="bugnum">BUG 001</span>: if multiple elements matched by the jQuery selector engine, styleJSON will make the amount of GET requests that the selector engine matched.
+								In other words, if styleJSON was applied on 3 <code>div</code>'s elements, the plugin will initiate 3 GET requests.
+							</li>
+						</ul>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+</html>

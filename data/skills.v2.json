@@ -1,0 +1,36 @@
+{
+    "author": "Daniel Brooks",
+    "filename" : "skills.json",
+    "date": "/Date(1314151709000)/",
+    "data" : {
+        "title": "Skills",
+        "items":[
+            {
+                "title" : "javascript",
+                "experience" : [
+                    {
+                        "title" : "Javascript",
+                        "time": "8-9 years"
+                    },
+                    {
+                        "title" : "jQuery",
+                        "time" : "nearly 2 years"
+                    }
+                ]
+            },
+            {
+                "title" : "PHP",
+                "experience" : [
+                    {
+                        "title" : "Java (Android)",
+                        "time": "1-2 years"
+                    },
+                    {
+                        "title" : "Java",
+                        "time": "1-2 years"
+                    }
+                ]
+            }
+        ]
+    }
+}
