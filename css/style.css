@@ -1,0 +1,33 @@
+@CHARSET "utf-8";
+
+
+*, html { font-family: Arial; }
+
+.heading { margin-top:20px; font-size: 22px; margin-left: 15px; }
+.text { font-size: 13px;  }
+.bugnum { font-weight:bold; font-size: 14px; }
+
+ul { margin: 20px auto 0 auto; width: 90%; list-style-type: lower-roman; list-style-position: outside; }
+	ul li { margin: 10px 0; padding: 5px 20px 0 5px; }
+		ul li.finished { text-decoration: line-through; margin: 10px 0; padding: 5px 20px 0 5px; }
+
+td { padding: 10px 15px; }
+
+table { border: 0 solid #000; margin: 0 auto; width: 90%; height: 100%; }
+	table caption { margin-top: 25px; float: left; position: relative; font-size: 20px; font-weight: bold; }
+	table thead { margin: 15px 0; }
+		table thead tr { margin: 15px 0; padding: 5px 5px; }
+			table thead tr td { font-size: 24px; font-weight: bold; padding-left: 100px; border-bottom: 1px solid #000; }
+				table thead tr td span.small { padding-right: 100px; vertical-align: bottom; position: relative; float: right; font-weight: normal; font-size: 12px; }
+	table tbody { margin-top: 20px; font-size: 14px; }
+		table tbody tr { margin: 10px 5px; padding: 5px 5px; }
+
+table.changelog { border: 0 solid #000; margin: 0 auto 25px auto; width: 90%; height: 100%; }
+	table.changelog tbody tr { padding: 10px; margin: 5px; border: 1px solid #000; }
+		table.changelog tbody tr.header td.header { font-weight: bold; color:#fff; background-color: #545454; }
+		table.changelog tbody tr:nth-child(even) { background-color: transparent; }
+		table.changelog tbody tr:nth-child(odd) { background-color: #F2F2F2; }
+.codes { margin:5px 5px; }
+.codes code { font-family: Courier New; font-size: 14px; margin: 5px 3px; padding: 3px 3px;;}
+hr { color: #000; background-color:#000; width: 100%; }
+

@@ -63,13 +63,14 @@ $(function(){
     	},
 
     /*
-     * Test 5
-     * test 5 style mockup and associated data file
+     * Test 4
+     * test 4 style mockup and associated data file
      */
     	test4 = {
             style:
                 {   // $(selector)
                     "span": ["author"]   // <span class="author">...
+    				,div : "date myClass"	// add two classes to the element <div class="date myClass">[date format]</div>
                     ,data: { // <div class="data">...
                         "span" : "title",   // <span class="title">...
                         "div" : {   // <div>...
@@ -110,6 +111,7 @@ $(function(){
     	$r.styleJSON( test3.filename, test3.style );
     });
     $('#demo4').live('click',function(){
+//    	$.styleJSON.defaults.dateFormat = "dddd, mmmm d, yyyy";
     	var $r = $('.root4');
     	removeChildren.call($r);
     	$r.styleJSON( test4.filename, test4.style );
