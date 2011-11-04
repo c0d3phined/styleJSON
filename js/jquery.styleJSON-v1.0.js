@@ -34,19 +34,24 @@
         return ret;
     };
 
+    Date.fromJSONDate = function( jsonDate ) { return eval( jsonDate.replace( /\/Date\((-?\d+)\)\//gi, "new Date($1)" ) ); };
+
     $.styleJSON = function( json, options, callback ) {return $.fn.styleJSON( json, options, callback );};
 
     $.styleJSON.defaults = {
-    		arrayTag : "ul"
+    		arrayTag : "ul",
+    		// use Date Format script for formatting dates
+    		// must be in the same directory as this script
+    		useDateFormat: true,
+    		dateFormat : "dddd, mmmm d, yyyy",
+    		dateFormatPath: "js/date.format.js"
     };
 
     $.fn.styleJSON = function( json, template, callback ){
 
         function make( tag, jQele ){
-            if ( !jQele )
-                return $( document.createElement( tag ) );
-            else
-                return document.createElement( tag );
+            if ( !jQele ) return $( document.createElement( tag ) );
+            else return document.createElement( tag );
         }
 
         function tryObj( key, obj) {
@@ -81,33 +86,67 @@
             }
         }
 
+        function parseDate( txt, ele ){
+        	try{
+        		txt = Date.fromJSONDate( txt );
+        		isDate = true;
+        		if ( defs.useDateFormat && isDateFormatLoaded() ) {
+        			txt = dateFormat( txt, defs.dateFormat );
+        		} else {
+        			$.getScript( defs.dateFormatPath, function(d){
+            			txt = dateFormat( txt, defs.dateFormat );
+            			ele.text( txt );
+        			});
+        		}
+        	} catch(e){
+        		debug('error parsing Date string.');
+    		}
+        }
+
         function parseHTMLElements( property, ctx, to, dataCtx ){
         	if ( property == "key" ) return;
-            var m = omap, ele = null, key = ctx['key'], txt;
+            var m = omap, ele = null, key = ctx['key'], txt,isDate=false;
             for (var i = 0; i < m.length; i++) {
                 // node matches html element
                 if ( property == m[i]){
                     ele = make( property );
-                    if ( typeof ctx[ property ] == 'string' ){
+                    if ( typeof ctx[ property ] == 'string' ){	// string?
                         if ( !ctx.hasKey ) {
                             // check data for ctx[ property ]
                             txt = dataCtx[ ctx[ property ] ] ? dataCtx[ ctx[ property ] ] : '';
-                            /*if ( isMultiClass( ctx[ property ] ) ) {
-                                // TODO: handle multi-class
-                            } else {*/
+                            if ( isDateString( txt ) ){
+                            	parseDate( txt, ele );
+                            }
+
+                            if ( isMultiClass( ctx[ property ] ) ) {
+                            	var classes = ctx[ property ].split(' '), nclass = classes.length;
+                            	for ( var v = 0; v < nclass; v++) {
+                            		ele.addClass( classes[ v ] );
+                            		txt = dataCtx[ classes[ v ] ] ? dataCtx[ classes[ v ] ] : txt; 
+                                    if ( isDateString( txt ) ){
+                                    	parseDate( txt, ele );
+                                    }
+                            	}
+                            	ele.appendTo( to );
+                            } else {
                                 ele.addClass( ctx[ property ] ).appendTo( to );
-                            /*}*/
-                            if ( !isLinkTag( txt ) ) {ele.text( txt );}
-                            else {ele.html( txt );}
+                            }
+
+                            // check if it is a link
+                            if ( !isLinkTag( txt ) ) {
+                            	ele.text(isDate ? txt.toString() : txt);
+                        	} else {
+                            	ele.html( txt );
+                        	}
                         } else {
                             if ( isArrayTag( property ) ) {
                                 var _arr = tryObj( key, dataCtx );
                                 procKey( _arr, make(property), to );
-    //                                var _z = inspectObj( _arr );
+//                                var _z = inspectObj( _arr );
                                 look( ctx[ property ], _arr, to );
                             }
                         }
-                    } else if ( $.isArray( ctx[ property ] ) ){
+                    } else if ( $.isArray( ctx[ property ] ) ){	// array?
                         var _a = ctx[ property ];
                         for (var x = 0; x < _a.length; x++) {
                             txt = dataCtx[ _a[x] ] ? dataCtx[ _a[x] ] :
@@ -115,10 +154,14 @@
                             var _o = ele.clone();
                             _o.addClass( _a[x] )
                                 .appendTo( to );
-                            if ( !isLinkTag( txt ) ) {_o.text( txt );}
-                            else {_o.html( txt );}
+
+                            if ( !isLinkTag( txt ) ) {
+                            	_o.text( txt );
+                        	} else {
+                        		_o.html( txt );
+                    		}
                         }
-                    } else if ( typeof ctx[ property ] == 'object' ){
+                    } else if ( typeof ctx[ property ] == 'object' ){	// object?
                         ele.appendTo( to );
                         // worm through..
                         if ( ctx.hasKey ) {
@@ -132,20 +175,6 @@
             }   // end loop
             return false;
         }
-
-//        var checkMultiClass = function( str, ele, to ) {
-//
-//            var len = str.split(' ').length, a = [];
-////            if ( len > 1 ){
-////                for ( var x = 0; x < len; x++ ){
-////                    ele.addClass( arr[ x ] );
-////                    a.push( arr[x] );
-////                }
-////            } else {
-////                ele.addClass( str );
-////            }
-////            ele.appendTo( to );
-//        };
 
         function typeofContext(ctx){
             if ( ctx.hasOwnProperty("hasKey") && ctx.hasOwnProperty("types") ) return ctx;
@@ -181,7 +210,7 @@
 
                     if ( $.isArray( dataCtx ) && !$.isArray( ctx ) ) {
                         var n = dataCtx.length;
-                        for (var v = 0; v < n; v++) {
+                        for ( var v = 0; v < n; v++ ) {
                             ele = to.children('li').eq( v );
                             if ( !ele.length ) {
                             	if ( isArrayTag( p ) ) { }
@@ -192,7 +221,7 @@
                         break;
                     } else if ( $.isArray( ctx ) ) {
                         var clen = ctx.length;
-                        for (var z = 0; z < clen; z++) {
+                        for ( var z = 0; z < clen; z++ ) {
                             look( ctx[z], dataCtx, to );
                         }
                         break;
@@ -232,7 +261,7 @@
         }
 
         var defs = $.styleJSON.defaults || {},
-            omap = 'div,span,h1,h2,h3,section,ul,ol,li,p,i,b,label,table,thead,th,tbody,tr,td'.split(','),
+            omap = 'div,span,h1,h2,h3,section,ul,ol,li,p,i,b,label'.split(','),
             arrayTags = 'ol,ul'.split(','),
             isArrayTag = function( str ) {return /ul|ol|li/gi.test(str);},
             isLinkTag = function( str ) {return /<a[^>]*>(.*?)<\/a>/gi.test(str);},
@@ -241,10 +270,16 @@
             inc = 0,
             cb = typeof callback == 'function' ? callback : jQuery.noop,
     		len = this.length ? ( this.length ) : false,
-			me = this;
+			me = this,
+			isDateString = function( d ){ return /Date\(\d*\)/g.test( d ); },
+			isDateFormatLoaded = function(){ if ( typeof dateFormat == 'function' ) return true; else return false;};
 
         if ( !len ) {
         	return $('body').style( json, template );
+        }
+
+        function debug(msg){
+    		if ( console && console.log ) console.log( msg );
         }
 
         function dressArrayData( arr ) {
@@ -293,20 +328,20 @@
                     look( _o.template, _o.data, $this );
                 })
                 .error(function(e){
-                	var arr;
                 	if (e.responseText) {
-                		arr  = json =  data = eval( '('+e.responseText+')' );
-                		_o = handleIfArrayData( arr, template );
+                		json =  data = eval( '('+e.responseText+')' );
+                		if ( typeof json == 'object' )
+                			_o = handleIfArrayData( json, template );
                 		look( _o.template, _o.data, $this );
                 	} else {
-                		if ( console ) console.log( 'An error occured.' );
+                		debug( 'An error occured.' );
                 	}
                 })
                 .complete(function(){
                 	callbacking(me, json);
                 });
             } else if (typeof json == 'object' ) {
-            	_o = handleIfArrayData( json, template );
+            	_o = handleIfArrayData( data = json, template );
                 look( _o.template, _o.data, $this );
                 callbacking(me, json);
             }
