@@ -87,7 +87,46 @@ $(function(){
                     }
                 },
             filename: 'data/interests.json'
-        };
+        },
+        
+        test5 = {
+    		style :
+    			{
+//    				span : "storeinfo",
+    				span : ["date myClass", "storeinfo"],
+    				div : {
+    					key : "data.authors",
+    					authors : {
+    						div : "title",
+    						span : [ "isbn10", "lang" ]
+    					}
+    				}
+    			},
+    			filename :
+    				{
+    					"storeinfo" : "A Random Bookstore",
+    					"date" : "/Date(1320540472000)/",
+    					"data" : {
+    						"authors" : [
+								{
+									"title" : "The Creature From Jekyll Island",
+									"isbn10" : 0912986212,
+									"lang" : "English"
+								},
+								{
+									"title" : "Brave New World",
+									"isbn10" : 0060850523,
+									"lang" : "English"
+								},
+								{
+									"title" : "Confessions of an Economic Hitman",
+									"isbn10" : 0452287081,
+									"lang" : "English"
+								}
+							]
+    					}
+    				}
+    };
 
     /* not recommended */
 
@@ -115,5 +154,10 @@ $(function(){
     	var $r = $('.root4');
     	removeChildren.call($r);
     	$r.styleJSON( test4.filename, test4.style );
+    });
+    $('#demo5').live('click', function(){
+    	var $r = $('.root5');
+    	removeChildren.call($r);
+    	$r.styleJSON( test5.filename, test5.style );
     });
 });
