@@ -1,7 +1,7 @@
 /**
  * 
  * @preserve styleJSON
- * version 1.2
+ * version ...?
  * 
  * Copyright (c) 2011 Daniel Brooks
  * The MIT License (MIT)
@@ -39,7 +39,13 @@
 
     $.styleJSON = function( json, options, callback ) {return $.fn.styleJSON( json, options, callback );};
 
-    $.styleJSON.defaults = {
+    $.styleJSON._instances = [];
+
+	$.styleJSON.defaults = $.styleJSON._defaults = {
+
+			// HTML tag to wrap around a link when a string containing
+			// 'http://[...]' exists and is parsed into an anchor (<a>) element
+			linkWrapTag : "span",
 
     		// default array tag to use for arrays 
     		useArrayTag : "ul",
@@ -52,6 +58,7 @@
     		// flag to use ajax to load date.format.js
     		// if false, will use <script /> tag
     		useDateFormatAjaxLoad : false,
+
     		// path to date.format.js
     		dateFormatPath: "js/date.format.js",
 
@@ -148,7 +155,7 @@
         };
 
         function typeofContext( ctx ){
-            if ( ctx.hasOwnProperty("hasKey") && ctx.hasOwnProperty("types") ) return ctx;
+        	if ( 'hasKey' in ctx && 'types' in ctx ) return ctx;
             var o = {types:[], hasKey:false};
 
             for (var p in ctx) {
@@ -159,11 +166,13 @@
         }
 
 
-        var omap = 'div span h1 h2 h3 section ul ol li p i b label'.split(' '),
-            arrayTags = 'ol ul'.split(' '),
+        var omap = 'div span h1 h2 h3 section ul ol li p i b label'.split( ' ' ),
+            arrayTags = 'ol ul'.split( ' ' ),
             isArrayTag = function( str ) {return /ul|ol|li/gi.test(str);},
-            isLinkTag = function( str ) {return /<a[^>]*>(.*?)<\/a>/gi.test(str);},
-        	isMultiClass = function( str ) { return str.split( ' ' ).length > 1; },
+            linkTag = 'a',
+            isLink = function( str ) { return /http:/im.test(str); },
+            isHTMLLinkTag = function( str ) {return /<a[^>]*>(.*?)<\/a>/gi.test(str);},
+        	isMultiClass = function( str ) { return str ? ( str.split( ' ' ).length > 1 ) : false; },
             data = null,
             inc = 0,
             cb = typeOf( callback ) == 'function' ? callback : jQuery.noop,
@@ -191,11 +200,9 @@
     	                    o = o[ arr[i] ];
     	                }
     	            }
-    	            if ( o == obj ) {
-    	                return null;
-    	            } else {
-    	                return o;
-    	            }
+
+    	            if ( o == obj ) return null;
+    	            else return o;
     	        },
 
 
@@ -206,7 +213,7 @@
     	            var _parent =  parent ? parent : ele.parent(),
     	                len = parent ? (!arr ? 0 : arr.length) : arr.length-1;
     	            for (x = 0; x < len; x++) {
-    	                var _to = ele.clone();
+    	            	var _to = make( ele[0].tagName.toLowerCase() );
     	                _to.appendTo( _parent );
     	            }
     	        },
@@ -256,33 +263,53 @@
     	         */
     	    	parseString: function( property, ctx, to, dataCtx, ele ) {
     	            // check data for ctx[ property ]
-    	        	var formatted = false;
-    	            txt = dataCtx[ ctx[ property ] ] ? dataCtx[ ctx[ property ] ] : '';
-    	            if ( isDateString( txt ) ){
-    	            	this.parseDate( txt, ele );
-    	            	formatted = true;
-    	            }
+    	        	var formatted = false,
+    	        		cprop =  ctx[ property ] ? ctx[ property ] : '',
+    	            	txt = dataCtx[ cprop ] ? dataCtx[ cprop ] : '',
+            			ismulti = isMultiClass( cprop ),
+            			isdate = isDateString( txt ); // is data node a date?
 
-    	            if ( isMultiClass( ctx[ property ] ) ) {
-    	            	var classes = ctx[ property ].split(' '), nclass = classes.length;
+	            	if ( ismulti ) {
+    	            	var classes = cprop.split(' '), nclass = classes.length;
     	            	for ( var v = 0; v < nclass; v++) {
     	            		ele.addClass( classes[ v ] );
-    	            		txt = dataCtx[ classes[ v ] ] ? dataCtx[ classes[ v ] ] : txt; 
-    	                    if ( isDateString( txt ) && !formatted ){
+    	            		txt = dataCtx[ classes[ v ] ] ? dataCtx[ classes[ v ] ] : '';
+    	            		isdate = isDateString( txt );
+
+    	                    if ( isdate && !formatted ){
     	                    	this.parseDate( txt, ele );
     	                    	formatted = true;
     	                    }
     	            	}
-    	            	ele.appendTo( to );
+//    	            	ele.appendTo( to );
+	            	}
+
+//    	            if ( isMultiClass( cprop ) ) {
+//    	            	var classes = cprop.split(' '), nclass = classes.length;
+//    	            	for ( var v = 0; v < nclass; v++) {
+//    	            		ele.addClass( classes[ v ] );
+//    	            		txt = dataCtx[ classes[ v ] ] ? dataCtx[ classes[ v ] ] : txt; 
+//    	                    if ( isDateString( txt ) && !formatted ){
+//    	                    	this.parseDate( txt, ele );
+//    	                    	formatted = true;
+//    	                    }
+//    	            	}
+//    	            	ele.appendTo( to );
+//    	            } 
+    	            else if ( isdate ) {
+    	            	this.parseDate( txt, ele );
+    	            	formatted = true;
     	            } else {
-    	                ele.addClass( ctx[ property ] ).appendTo( to );
+    	                ele.addClass( cprop ).appendTo( to );
     	            }
 
     	            // check if it is a link
     	            if ( !formatted ) {
-    	                if ( !isLinkTag( txt ) ) {
+    	                if ( !isHTMLLinkTag( txt ) && !isLink( txt ) ) {
     	                	ele.text( txt );
-    	            	} else {
+    	            	} else if ( isLink( txt ) ) {
+                    		ele.append( make( linkWrapTag ).addClass( cprop ).append( make( property ).attr( 'href', txt ).text( txt ) ) );
+    	            	} else if ( isHTMLLinkTag( txt ) ){ 
     	                	ele.html( txt );
     	            	}
     	            }
@@ -333,21 +360,26 @@
     		                            		txt = dataCtx[ classes[ v ] ] ? dataCtx[ classes[ v ] ] : ''; 
     		                                    if ( isDateString( txt ) ){
     		                                    	this.parseDate( txt, ele );
+    		                                    } else {
+    		                                    	ele.text( txt );
     		                                    }
     		                            	}
     		                            	ele.appendTo( to );
     		                            } else {
     			                            txt = dataCtx[ _a[x] ] ? dataCtx[ _a[x] ] :
-    			                                    dataCtx[ key ] && dataCtx[ key ][ _a[x] ] ? dataCtx[ key ][ _a[x] ] : '';
+    			                                    ( dataCtx[ key ] && dataCtx[ key ][ _a[x] ] ? dataCtx[ key ][ _a[x] ] : '' );
+
     			                            var _o = make( property );
-    			                            _o.addClass( _a[x] )
-    			                                .appendTo( to );
+    			                            _o.addClass( _a[x] ).appendTo( to );
+
     		                                if ( isDateString( txt ) ){
     		                                	this.parseDate( txt, _o );
     		                                } else {
-    				                            if ( !isLinkTag( txt ) ) {
+    				                            if ( !isHTMLLinkTag( txt ) && property != linkTag ) {
     				                            	_o.text( txt );
-    				                        	} else {
+    				                        	} else if (  property == linkTag  ) {
+    	    			                    		_o.append( make( linkWrapTag ).addClass( _a[x] ).append( make( property ).attr( 'href', txt ).text( txt ) ) );
+    	    			                    	} else {
     				                        		_o.html( txt );
     				                    		}
     		                                }
@@ -389,6 +421,7 @@
     	            	case "object":
     		                for( var i = 0; i < props.length; i++ ){
     		                    if ( props[i] == 'types' || props[i] == 'hasKey' ) continue;
+
     		                    var ele = null, isHtml = false, key = ctx['key'], 
     		                    	p = props[i], type = typeOf( ctx[ p ] );
 
@@ -397,9 +430,7 @@
     		                        for ( var v = 0; v < n; v++ ) {
     		                            ele = to.children('li').eq( v );
     		                            if ( !ele.length ) {
-    		                            	if ( isArrayTag( p ) ) {
-    		                            		debugger;
-    		                            	}
+    		                            	if ( isArrayTag( p ) ) { /* rare */ }
     		                            } else {
     		                            	this.look( ctx, dataCtx[ v ], ele );
     		                            }
@@ -424,9 +455,11 @@
     			                        var txt = dataCtx[ ctx[ p ] ] ? dataCtx[ ctx[ p ] ] : '';
     			                        // TODO: check data for ctx[p]
     			                        to.addClass( ctx[ p ] );
-    			                        if ( !isLinkTag( txt ) ) {
+    			                        if ( !isHTMLLinkTag( txt ) && !isLink( txt ) ) {
     			                        	to.text( txt );
-    			                    	} else {
+    			                    	} else if ( isLink( txt ) ) {
+    			                    		to.append( make( linkWrapTag ).addClass( ctx[ p ] ).append( make( p ).attr( 'href', txt ).text( txt ) ) );
+    			                    	} else if ( isHTMLLinkTag( txt ) ) {
     			                        	to.html( txt );
     			                    	}
     			                    	break;
@@ -466,13 +499,15 @@
     	         * @param {Object} matched Matched jQuery element
     	         */
     	        init : function( data, template, $matched ) {
+    	        	$.styleJSON._instances.push( { template:template, data:data, matched:$matched } );
     	        	$matched.data( 'data', data );
     	    		var _o = handleIfArrayData( data, template );
     	    		this.look( _o.template, _o.data, $matched );
     	        	callbacking( me, json);
     	        }
 			},
-			defs = sj.defaults = $.extend( sj.defaults || {}, $.styleJSON.defaults || {} );
+			defs = sj.defaults = $.extend( $.styleJSON._defaults, ( $.styleJSON.defaults || {} ) ),
+            linkWrapTag = defs.linkWrapTag;
 
         if ( !len ) {
         	return $('body').styleJSON( json, template );
@@ -491,7 +526,7 @@
 		                	sj.init.call( sj, data, template, $this );
 		                })
 		                .error(function(e){
-		                	if (e.responseText) {
+		                	if ( e.responseText ) {
 		                		json =  data = eval( '('+e.responseText+')' );
 		                		if ( typeOf( json ) == 'object' ) sj.init.call( sj, data, template, $this );
 		                	} else {
