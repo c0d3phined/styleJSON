@@ -37,39 +37,42 @@
     	return eval( jsonDate.replace( /\/Date\((-?\d+)\)\//gi, "new Date($1)" ) );
     };
 
-    $.styleJSON = function( json, options, callback ) {return $.fn.styleJSON( json, options, callback );};
+    $.styleJSON = function( /** json, options, callback */ ) {
+    	debugger;
+    	return $.fn.styleJSON( Array.prototype.slice.call( arguments ) ); //json, options, callback );};
+    };
 
-    $.styleJSON._instances = [];
+//    $.styleJSON._instances = [];
 
 	$.styleJSON.defaults = $.styleJSON._defaults = {
 
 			// HTML tag to wrap around a link when a string containing
 			// 'http://[...]' exists and is parsed into an anchor (<a>) element
-			linkWrapTag : "span",
+			linkWrapTag : "div",
 
-    		// default array tag to use for arrays 
-    		useArrayTag : "ul",
+			// default array tag to use for arrays 
+			useArrayTag : "ul",
 
-    		// JavaScript Date Format
-    		// http://blog.stevenlevithan.com/archives/date-time-format
-    		// use Date Format script for formatting dates
-    		useDateFormat: true,
+			// JavaScript Date Format
+			// http://blog.stevenlevithan.com/archives/date-time-format
+			// use Date Format script for formatting dates
+			useDateFormat: true,
 
-    		// flag to use ajax to load date.format.js
-    		// if false, will use <script /> tag
-    		useDateFormatAjaxLoad : false,
+			// flag to use ajax to load date.format.js
+			// if false, will use <script /> tag
+			useDateFormatAjaxLoad : false,
 
-    		// path to date.format.js
-    		dateFormatPath: "js/date.format.js",
+			// path to date.format.js
+			dateFormatPath: "js/date.format.js",
 
 			// format for the dateFormat script
-    		dateFormat : "dddd, mmmm d, yyyy"
-    };
+			dateFormat : "dddd, mmmm d, yyyy"
+	};
 
     /**
      * @class jQuery.fn.styleJSON
      */
-    $.fn.styleJSON = function( json, template, callback ){
+    $.fn.styleJSON = function( /** json, template, callback */ ){
 
     	/* utility functions */
         function make( tag, nojQ ){
@@ -166,23 +169,26 @@
         }
 
 
-        var omap = 'div span h1 h2 h3 section ul ol li p i b label'.split( ' ' ),
+        var args = Array.prototype.slice.call( arguments ),
+            json = args[0],
+            template = args[1],
+            cb = typeOf( args[2] ) == 'function' ? args[2] : jQuery.noop,
+            omap = 'div span h1 h2 h3 section ul ol li a p i b label'.split( ' ' ),
             arrayTags = 'ol ul'.split( ' ' ),
             isArrayTag = function( str ) {return /ul|ol|li/gi.test(str);},
             linkTag = 'a',
             isLink = function( str ) { return /http:/im.test(str); },
             isHTMLLinkTag = function( str ) {return /<a[^>]*>(.*?)<\/a>/gi.test(str);},
-        	isMultiClass = function( str ) { return str ? ( str.split( ' ' ).length > 1 ) : false; },
+            isMultiClass = function( str ) { return str ? ( str.split( ' ' ).length > 1 ) : false; },
             data = null,
             inc = 0,
-            cb = typeOf( callback ) == 'function' ? callback : jQuery.noop,
-    		len = this.length ? ( this.length ) : false,
-			me = this,
-			isDateString = function( d ){ return /Date\(\d*\)/g.test( d ); },
-			isDateFormatLoaded = function(){ try{ if ( typeOf( dateFormat ) == 'function' ) return true; else return false;}catch(e){return false;} },
+            len = this.length ? ( this.length ) : false,
+            me = this,
+            isDateString = function( d ){ return /Date\(\d*\)/g.test( d ); },
+            isDateFormatLoaded = function(){ try{ if ( typeOf( dateFormat ) == 'function' ) return true; else return false;}catch(e){return false;} },
 
-			sj = {
-    			_instance : [],
+    		sj = {
+				_instance : [],
 
     	        /**
     	         * Attempt to "drill down" into a data source by the given key
@@ -190,8 +196,8 @@
     	         * @param {Object} obj The data source object to attempt drilling down into. 
     	         * @returns {?Object}
     	         */
-    	        tryDrilldown: function( key, obj ) {
-    	            var arr = key.split('.'),
+				tryDrilldown: function( key, obj ) {
+					var arr = key.split('.'),
     	                arrlen = arr.length,
     	                o = obj;
 
@@ -210,12 +216,12 @@
     	         * process keys
     	         */
     	        processKey : function( arr, ele, parent ){
-    	            var _parent =  parent ? parent : ele.parent(),
-    	                len = parent ? (!arr ? 0 : arr.length) : arr.length-1;
-    	            for (x = 0; x < len; x++) {
-    	            	var _to = make( ele[0].tagName.toLowerCase() );
-    	                _to.appendTo( _parent );
-    	            }
+    	        	var _parent =  parent ? parent : ele.parent(),
+	        			len = parent ? (!arr ? 0 : arr.length) : arr.length-1;
+        			for (x = 0; x < len; x++) {
+        				var _to = make( ele[0].tagName.toLowerCase() );
+        				_to.appendTo( _parent );
+        			}
     	        },
 
 
@@ -223,8 +229,9 @@
     	         * Parse a JSON date string and add parsed text to given element
     	         * @param {String} txt Formatted Date string NOT in ISO8601
     	         * @param {jQuery} ele jQuery wrapped element to operate on.
+    	         * @param {jQuery} to jQuery wrapped parent element to append ele to.
     	         */
-    	        parseDate: function( txt, ele ){
+    	        parseDate: function( txt, ele, to ){
     	        	try{
     	        		txt = Date.fromJSONDate( txt );
     	        		isDate = true;
@@ -233,13 +240,13 @@
     	        			ele.text( txt );
     	        		} else if ( defs.useDateFormatAjaxLoad ) {
     	        			$.getScript( defs.dateFormatPath, function(d){
-    	            			txt = dateFormat( txt, defs.dateFormat );
-    	            			ele.text( txt );
+    	        				txt = dateFormat( txt, defs.dateFormat );
+    	        				ele.text( txt );
     	        			});
     	        		} else {
     	        			var script = make( 'script', true ), s = document.getElementsByTagName( 'script' )[0];
     	        			script.type = 'text/javascript';
-    	    				script.async = true; // HTML5 async
+    	        			script.async = true; // HTML5 async
     	        			script.src = defs.dateFormatPath;
     	        			script.onload = function(){
     	        				txt = dateFormat( txt, defs.dateFormat );
@@ -247,9 +254,10 @@
     	        			};
     	        			s.parentNode.insertBefore( script, s );
     	        		}
+    	        		if ( to ) to.append( ele );
     	        	} catch(e){
     	        		debug('error parsing Date string.');
-    	    		}
+    	        	}
     	        },
 
 
@@ -261,59 +269,46 @@
     	         * @param {Object} dataCtx Data context.
     	         * @param {Object} ele Current element to operate upon. 
     	         */
-    	    	parseString: function( property, ctx, to, dataCtx, ele ) {
-    	            // check data for ctx[ property ]
+    	        parseString: function( property, ctx, to, dataCtx, ele ) {
+    	        	// check data for ctx[ property ]
     	        	var formatted = false,
-    	        		cprop =  ctx[ property ] ? ctx[ property ] : '',
-    	            	txt = dataCtx[ cprop ] ? dataCtx[ cprop ] : '',
-            			ismulti = isMultiClass( cprop ),
-            			isdate = isDateString( txt ); // is data node a date?
+    	        		cprop = ctx[ property ] || '',
+	        			txt = dataCtx[ cprop ] || '',
+    					ismulti = isMultiClass( cprop ),
+    					isdate = isDateString( txt ); // is data node a date?
 
-	            	if ( ismulti ) {
-    	            	var classes = cprop.split(' '), nclass = classes.length;
-    	            	for ( var v = 0; v < nclass; v++) {
-    	            		ele.addClass( classes[ v ] );
-    	            		txt = dataCtx[ classes[ v ] ] ? dataCtx[ classes[ v ] ] : '';
-    	            		isdate = isDateString( txt );
+        			if ( ismulti ) {
+        				var classes = cprop.split(' '), nclass = classes.length;
+        				for ( var v = 0; v < nclass; v++) {
+        					ele.addClass( classes[ v ] );
+        					txt = dataCtx[ classes[ v ] ] || '';
+        					isdate = isDateString( txt );
 
-    	                    if ( isdate && !formatted ){
-    	                    	this.parseDate( txt, ele );
-    	                    	formatted = true;
-    	                    }
-    	            	}
+        					if ( isdate && !formatted ){
+        						this.parseDate( txt, ele, to );
+        						formatted = true;
+        					}
+        				}
 //    	            	ele.appendTo( to );
-	            	}
-
-//    	            if ( isMultiClass( cprop ) ) {
-//    	            	var classes = cprop.split(' '), nclass = classes.length;
-//    	            	for ( var v = 0; v < nclass; v++) {
-//    	            		ele.addClass( classes[ v ] );
-//    	            		txt = dataCtx[ classes[ v ] ] ? dataCtx[ classes[ v ] ] : txt; 
-//    	                    if ( isDateString( txt ) && !formatted ){
-//    	                    	this.parseDate( txt, ele );
-//    	                    	formatted = true;
-//    	                    }
-//    	            	}
-//    	            	ele.appendTo( to );
-//    	            } 
-    	            else if ( isdate ) {
-    	            	this.parseDate( txt, ele );
-    	            	formatted = true;
-    	            } else {
-    	                ele.addClass( cprop ).appendTo( to );
-    	            }
+        			} else if ( isdate ) {
+        				this.parseDate( txt, ele, to );
+        				formatted = true;
+        			} else {
+        				ele.addClass( cprop ).appendTo( to );
+        			}
 
     	            // check if it is a link
     	            if ( !formatted ) {
-    	                if ( !isHTMLLinkTag( txt ) && !isLink( txt ) ) {
-    	                	ele.text( txt );
+    	            	if ( !isHTMLLinkTag( txt ) && !isLink( txt ) ) {
+    	            		ele.text( txt );
     	            	} else if ( isLink( txt ) ) {
-                    		ele.append( make( linkWrapTag ).addClass( cprop ).append( make( property ).attr( 'href', txt ).text( txt ) ) );
+                			if ( ele[0].tagName == "A" ) ele.detach();
+    	            		to.append( make( linkWrapTag ).addClass( cprop ).append( make( property ).attr( 'href', txt ).text( txt ) ) );
     	            	} else if ( isHTMLLinkTag( txt ) ){ 
-    	                	ele.html( txt );
+    	            		ele.html( txt );
     	            	}
     	            }
-    	    	},
+    	        },
 
 
     	        /**
@@ -361,27 +356,28 @@
     		                                    if ( isDateString( txt ) ){
     		                                    	this.parseDate( txt, ele );
     		                                    } else {
-    		                                    	ele.text( txt );
+    		                                    	if ( ele.text() == "" ) ele.text( txt );	// do not over-write parsed date value if exists
     		                                    }
     		                            	}
     		                            	ele.appendTo( to );
     		                            } else {
-    			                            txt = dataCtx[ _a[x] ] ? dataCtx[ _a[x] ] :
-    			                                    ( dataCtx[ key ] && dataCtx[ key ][ _a[x] ] ? dataCtx[ key ][ _a[x] ] : '' );
+    		                            	txt = dataCtx[ _a[x] ] ? dataCtx[ _a[x] ] :
+    		                            		( dataCtx[ key ] && dataCtx[ key ][ _a[x] ] ? dataCtx[ key ][ _a[x] ] : '' );
 
-    			                            var _o = make( property );
-    			                            _o.addClass( _a[x] ).appendTo( to );
+    		                            	var _o = make( property );
+    		                            	_o.addClass( _a[x] ).appendTo( to );
 
-    		                                if ( isDateString( txt ) ){
-    		                                	this.parseDate( txt, _o );
-    		                                } else {
-    				                            if ( !isHTMLLinkTag( txt ) && property != linkTag ) {
-    				                            	_o.text( txt );
-    				                        	} else if (  property == linkTag  ) {
-    	    			                    		_o.append( make( linkWrapTag ).addClass( _a[x] ).append( make( property ).attr( 'href', txt ).text( txt ) ) );
-    	    			                    	} else {
-    				                        		_o.html( txt );
-    				                    		}
+    		                            	if ( isDateString( txt ) ){
+    		                            		this.parseDate( txt, _o, to );
+    		                            	} else {
+    		                            		if ( !isHTMLLinkTag( txt ) && property != linkTag ) {
+    		                            			_o.text( txt );
+    		                            		} else if (  property == linkTag  ) {
+    		                            			if ( _o[0].tagName == "A" ) _o.detach();
+    		                            			to.append( make( linkWrapTag ).addClass( _a[x] ).append( make( property ).attr( 'href', txt ).text( txt ) ) );
+    		                            		} else {
+    		                            			_o.html( txt );
+    		                            		}
     		                                }
     		                            }
     		                        }
@@ -418,76 +414,77 @@
 
     	            switch ( ctype ) {
 
-    	            	case "object":
-    		                for( var i = 0; i < props.length; i++ ){
-    		                    if ( props[i] == 'types' || props[i] == 'hasKey' ) continue;
+    	            case "object":
+    	            	for( var i = 0; i < props.length; i++ ){
+    	            		if ( props[i] == 'types' || props[i] == 'hasKey' ) continue;
 
-    		                    var ele = null, isHtml = false, key = ctx['key'], 
-    		                    	p = props[i], type = typeOf( ctx[ p ] );
+    	            		var ele = null, isHtml = false, key = ctx['key'], 
+    	            			p = props[i], type = typeOf( ctx[ p ] );
 
-    		                    if ( isArray( dataCtx ) && !isArray( ctx ) ) {
-    		                        var n = dataCtx.length;
-    		                        for ( var v = 0; v < n; v++ ) {
-    		                            ele = to.children('li').eq( v );
-    		                            if ( !ele.length ) {
-    		                            	if ( isArrayTag( p ) ) { /* rare */ }
-    		                            } else {
-    		                            	this.look( ctx, dataCtx[ v ], ele );
-    		                            }
-    		                        }
-    		                        break;
-    		                    } else if ( isArray( ctx ) ) {
-    		                        var clen = ctx.length;
-    		                        for ( var z = 0; z < clen; z++ ) {
-    		                        	this.look( ctx[ z ], dataCtx, to );
-    		                        }
-    		                        break;
-    		                    }
+    	            		if ( isArray( dataCtx ) && !isArray( ctx ) ) {
+    	            			var n = dataCtx.length;
+    	            			for ( var v = 0; v < n; v++ ) {
+    	            				ele = to.children('li').eq( v );
+    	            				if ( !ele.length ) {
+    	            					if ( isArrayTag( p ) ) { /* rare */ }
+    	            				} else {
+    	            					this.look( ctx, dataCtx[ v ], ele );
+    	            				}
+    	            			}
+    	            			break;
+    	            		} else if ( isArray( ctx ) ) {
+    	            			var clen = ctx.length;
+    	            			for ( var z = 0; z < clen; z++ ) {
+    	            				this.look( ctx[ z ], dataCtx, to );
+    	            			}
+    	            			break;
+    	            		}
 
-    		                	isHtml = this.parseHTMLElements( p, ctx, to, dataCtx );
+    	            		isHtml = this.parseHTMLElements( p, ctx, to, dataCtx );
 
-    		                    if ( isHtml || p == 'key' ) continue;
+    	            		if ( isHtml || p == 'key' ) continue;
 
-    		                    //parse unknown nodes
-    		                    switch ( type ) {
+    	            		// parse unknown nodes
+    	            		switch ( type ) {
 
-    			                    case "string":
-    			                        var txt = dataCtx[ ctx[ p ] ] ? dataCtx[ ctx[ p ] ] : '';
-    			                        // TODO: check data for ctx[p]
-    			                        to.addClass( ctx[ p ] );
-    			                        if ( !isHTMLLinkTag( txt ) && !isLink( txt ) ) {
-    			                        	to.text( txt );
-    			                    	} else if ( isLink( txt ) ) {
-    			                    		to.append( make( linkWrapTag ).addClass( ctx[ p ] ).append( make( p ).attr( 'href', txt ).text( txt ) ) );
-    			                    	} else if ( isHTMLLinkTag( txt ) ) {
-    			                        	to.html( txt );
-    			                    	}
-    			                    	break;
+    	            		case "string":
+    	            			var txt = dataCtx[ ctx[ p ] ] ? dataCtx[ ctx[ p ] ] : '';
+    	            			// TODO: check data for ctx[p]
+    	            			to.addClass( ctx[ p ] );
+    	            			if ( !isHTMLLinkTag( txt ) && !isLink( txt ) ) {
+    	            				to.text( txt );
+    	            			} else if ( isLink( txt ) ) {
+    	            				to.append( make( linkWrapTag ).addClass( ctx[ p ] ).append( make( p ).attr( 'href', txt ).text( txt ) ) );
+    	            			} else if ( isHTMLLinkTag( txt ) ) {
+    	            				to.html( txt );
+    	            			}
+    	            			break;
 
-    			                    case "object":
-    			                        var div = make( 'div' );
-    			                        div.addClass( p ).appendTo( to );
-    			                        if ( ctx.hasKey ) {
-    			                            var arr = this.tryDrilldown( key, dataCtx );
-    			                            if ( isArray( arr ) ) {
-    			                                dataCtx = arr;
-    			                                div.remove();
-    			                                div = make( defs.useArrayTag );
-    			                                div.addClass( p )
-    			                                    .appendTo( to );
-    			                            }
-    			                            this.processKey( arr, make('li'), div );
-    			                        }
-    			                        this.look( ctx[ p ], dataCtx, div );
-    			                    	break;
-    		                    }
-    		                } // end property loop
-    		            	break;
+    	            		case "object":
+    	            			var div = make( 'div' ), drilled = false;
+    	            			if ( ctx.hasKey ) {
+    	            				var arr = this.tryDrilldown( key, dataCtx );
+    	            				if ( isArray( arr ) ) {
+    	            					dataCtx = arr;
+    	            					div.remove();
+    	            					div = make( defs.useArrayTag );
+    	            					div.addClass( p )
+    	            						.appendTo( to );
+    	            					drilled = true;
+    	            				}
+    	            				this.processKey( arr, make('li'), div );
+    	            			}
+    	            			if ( !drilled ) div.addClass( p ).appendTo( to );
+    	            			this.look( ctx[ p ], dataCtx, div );
+    	            			break;
+    	            		}
+    	            	} // end property loop
+    	            	break;
 
-    	            	case "string":
+    	            case "string":
 //    	            		parseString( props[ ctx ], ctx, to, dataCtx, to );
-    	            		to.addClass( ctx );
-    	        		break;
+    	            	to.addClass( ctx );
+    	            	break;
     	            }
     	        },
 
@@ -499,51 +496,51 @@
     	         * @param {Object} matched Matched jQuery element
     	         */
     	        init : function( data, template, $matched ) {
-    	        	$.styleJSON._instances.push( { template:template, data:data, matched:$matched } );
+//    	        	$.styleJSON._instances.push( { template:template, data:data, matched:$matched } );
     	        	$matched.data( 'data', data );
-    	    		var _o = handleIfArrayData( data, template );
-    	    		this.look( _o.template, _o.data, $matched );
+    	        	var _o = handleIfArrayData( data, template );
+    	        	this.look( _o.template, _o.data, $matched );
     	        	callbacking( me, json);
     	        }
 			},
 			defs = sj.defaults = $.extend( $.styleJSON._defaults, ( $.styleJSON.defaults || {} ) ),
-            linkWrapTag = defs.linkWrapTag;
+			linkWrapTag = defs.linkWrapTag;
 
-        if ( !len ) {
-        	return $('body').styleJSON( json, template );
-        }
+		if ( !len ) {
+			return $('body').styleJSON( json, template );
+		}
 
-        return this.each(function(){
+		return this.each(function(){
 
-            var $this =  $(this);
-            data = $this.data('data') ? $this.data('data') : data;
+			var $this =  $(this);
+			data = $this.data('data') ? $this.data('data') : data;
 
-            switch ( typeOf( json ) ){
-	            case "string":
-	            	if ( data == null ) {
-		                $.getJSON( json, function(_d){
-		                	data = json = _d;
-		                	sj.init.call( sj, data, template, $this );
-		                })
-		                .error(function(e){
-		                	if ( e.responseText ) {
-		                		json =  data = eval( '('+e.responseText+')' );
-		                		if ( typeOf( json ) == 'object' ) sj.init.call( sj, data, template, $this );
-		                	} else {
-		                		debug( 'An error occured.' );
-		                	}
-		                });
-	            	} else {
-	            		sj.init.call( sj, data, template, $this );
-	            	}
-	            	break;
+			switch ( typeOf( json ) ){
+			case "string":
+				if ( data == null ) {
+					$.getJSON( json, function(_d){
+						data = json = _d;
+						sj.init.call( sj, data, template, $this );
+					})
+					.error(function(e){
+						if ( e.responseText ) {
+							json =  data = eval( '('+e.responseText+')' );
+							if ( typeOf( json ) == 'object' ) sj.init.call( sj, data, template, $this );
+						} else {
+							debug( 'An error occured.' );
+						}
+					});
+				} else {
+					sj.init.call( sj, data, template, $this );
+				}
+				break;
 
-	            case "array":
-	            case "object":
-	            	sj.init.call( sj, data = json, template, $this );
-	            	break;
-            }
-        });
-    };
+			case "array":
+			case "object":
+				sj.init.call( sj, data = json, template, $this );
+				break;
+			}
+		});
+            };
 
 })( window.jQuery, undefined );
