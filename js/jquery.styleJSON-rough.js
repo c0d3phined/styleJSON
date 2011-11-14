@@ -38,8 +38,7 @@
     };
 
     $.styleJSON = function( /** json, options, callback */ ) {
-    	debugger;
-    	return $.fn.styleJSON( Array.prototype.slice.call( arguments ) ); //json, options, callback );};
+    	return $.fn.styleJSON.apply( $( document.body ), arguments );
     };
 
 //    $.styleJSON._instances = [];
@@ -64,6 +63,9 @@
 
 			// path to date.format.js
 			dateFormatPath: "js/date.format.js",
+
+			// user-defined function for custom date formatting
+			fnFormatDate : jQuery.noop,
 
 			// format for the dateFormat script
 			dateFormat : "dddd, mmmm d, yyyy"
@@ -94,10 +96,11 @@
         }
 
         /**
-         * 'standardize' object types for use in script
+         * 'normalize' object types for use in script
          */
         function typeOf( o ) {
-        	if ( o == null ) return 'undefined'; // "fix" javascript's typeof null === 'object' gotcha
+        	if ( typeof o == 'undefined' ) return 'undefined';
+        	if ( o == null ) return 'null'; // "fix" javascript's typeof null === 'object' gotcha
         	var type = typeof o;
 
         	switch( type ) {
@@ -150,8 +153,8 @@
         var Context = function( ) {
             var props = typeofContext( this );
             for ( var p in props ) {
-                if ( !this.hasOwnProperty( p ) ) {
-                    this[ p ] = props[p];
+                if ( !( p in this ) ) {
+                    this[ p ] = props[ p ];
                 }
             }
             return this;
@@ -182,8 +185,8 @@
             isMultiClass = function( str ) { return str ? ( str.split( ' ' ).length > 1 ) : false; },
             data = null,
             inc = 0,
-            len = this.length ? ( this.length ) : false,
             me = this,
+            len = this.length ? ( this.length ) : 0,
             isDateString = function( d ){ return /Date\(\d*\)/g.test( d ); },
             isDateFormatLoaded = function(){ try{ if ( typeOf( dateFormat ) == 'function' ) return true; else return false;}catch(e){return false;} },
 
@@ -244,17 +247,43 @@
     	        				ele.text( txt );
     	        			});
     	        		} else {
-    	        			var script = make( 'script', true ), s = document.getElementsByTagName( 'script' )[0];
-    	        			script.type = 'text/javascript';
-    	        			script.async = true; // HTML5 async
-    	        			script.src = defs.dateFormatPath;
-    	        			script.onload = function(){
-    	        				txt = dateFormat( txt, defs.dateFormat );
-    	        				ele.text( txt );
-    	        			};
-    	        			s.parentNode.insertBefore( script, s );
+    	        			// lazy-load date.format.js
+    	        			(function(d, n, t, e){
+    	        				var s = make( n, true ),
+    	        					h = document.getElementsByTagName( n )[0];
+
+    	        				s.async = s.src = defs.dateFormatPath;
+
+    	        				// using jQuery's onload/onreadystatechange fix
+    	        				s.onload = s.onreadystatechange = function( ) {
+
+    	        					if ( !s.readyState || /loaded|complete/.test( s.readyState ) ) {
+
+    	    	        				if ( defs.fnFormatDate != jQuery.noop ) defs.fnFormatDate( t, e, defs.dateFormat );
+    	    	        				else {
+    	    	        					t = dateFormat( t, defs.dateFormat );
+    	    	        					e.text( t );
+    	    	        				}
+
+    	        						// Handle memory leak in IE
+    	        						s.onload = s.onreadystatechange = null;
+
+    	        						// Remove the script
+    	        						if ( s.parentNode ) {
+    	        							s.parentNode.removeChild( s );
+    	        						}
+
+    	        						// Dereference the script and references
+    	        						s = e = t = undefined;
+    	        					}
+    	        				};
+
+    	        				h.parentNode.insertBefore( s, h );
+	        				})(document,'script', txt, ele);
     	        		}
+
     	        		if ( to ) to.append( ele );
+
     	        	} catch(e){
     	        		debug('error parsing Date string.');
     	        	}
@@ -505,10 +534,6 @@
 			},
 			defs = sj.defaults = $.extend( $.styleJSON._defaults, ( $.styleJSON.defaults || {} ) ),
 			linkWrapTag = defs.linkWrapTag;
-
-		if ( !len ) {
-			return $('body').styleJSON( json, template );
-		}
 
 		return this.each(function(){
 
