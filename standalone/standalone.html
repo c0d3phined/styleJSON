@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>styleJSON Standalone</title>
+
+        <link href='http://fonts.googleapis.com/css?family=Terminal+Dosis' rel='stylesheet' type='text/css'>
+
+        <style type="text/css">
+        body {font-family: sans-serif; font-size: 13px; }
+        a { color: blue; text-decoration: none; }
+            a:hover { text-decoration: underline; }
+
+        input[type=button] {padding:4px 5px; margin: 4px 3px; border: 1px solid #000; }
+            input[type=button]:hover { font-style: italic; }
+
+        .logo { font-family: Arial; top:0; left: 0; position: fixed; margin: 25px 0 0 55px; font-size: 32px;}
+            .logo .style { color: #000; font-size: 22px; font-family: 'Terminal Dosis', sans-serif; font-weight: bold; }
+            .logo .json { color: #0000CC; font-weight: bold; padding-left:4px; }
+
+        ul.demos { margin: 0 0 0 -50px; }
+            ul.demos li.demo {}
+                ul.demos li.demo fieldset legend { border: 1px solid #000; }
+
+        ul {margin:10px 0 0 15px; list-style-type: none; font-size: 15px;}
+            ul li { font-family: 'Terminal Dosis', sans-serif; margin:5px 0 0 10px; padding: 3px 5px;}
+                ul li span { padding: 5px 10px 0 0; margin: 5px 20px 0 0; }
+
+        .root {width: 650px; margin: 0 auto; border: 1px solid #000; padding: 12px 25px;}
+            .root .demo {margin-bottom:50px; padding: 15px 20px; }
+            .root .demo:nth-child(odd) { background-color: #FAFAFA; }
+
+        .stopwatch { float: right; top: 10px; right: 10px; font-family: Arial; font-size: 15px; font-style: italic;}
+
+        .demo2 {width: 65%; margin: 0 auto; text-align: left; min-width: 550px; font-family: sans-serif; font-size: 13px; }
+            .demo2 span.storeinfo { display: block; font-family: Arial; font-size: 22px; font-weight:bold; width: 100%; margin:0 auto; text-align: center;}
+            .demo2 span.date { top: 15px; position: relative; font-family: Courier New; }
+                .demo2 span.date em { display: block; font-style: italics;}
+            .demo2 ul { list-style: none; margin-left: -10px; }
+                .demo2 ul li { margin: 20px 0 0 0; }
+                    .demo2 ul li span { display: inline; padding: 2px 5px; }
+                        .demo2 ul li span.isbn10 { color: blue; margin: 1px 5px; }
+                        .demo2 ul li span.lang { font-style: italic; }
+
+        .demo1 { margin:0; width: 350px; text-align: left;}
+
+        .demo3 { margin:0; width: 350px; text-align: left; }
+            .demo3 ul li {margin: 10px 0 0 10px; }
+                .demo3 ul li:hover .isbn10, .demo3 ul li:hover .lang { display:block; }
+            .demo3 .isbn10, .demo3 .lang { display:none; margin: 0 4px; color: blue; font-size: 12px; font-style: italic; float:right;}
+            .demo3 .title { font-size: 15px; font-weight: bold; margin: 0 0 0 -10px;}                
+            .demo3 .lang { color: #000; }
+
+        .demo4 {margin:0; width: 100%; text-align: left; }
+            .demo4 ul.results { width: 100%; font-family: Arial; font-family: 13px; }
+                .demo4 ul li { margin: 20px 0 40px 0; width: 550px; }
+                    .demo4 ul li:nth-child(odd) { background-color: #CED9FF; }
+                    .demo4 ul li em { margin: 0 10px; }
+            .demo4 .title { font-weight:bold; margin-left:-10px;}
+            .demo4 .desc { margin-left:15px;}
+
+        .demo5 { margin:0; width: 90%; text-align: left;}
+            .demo5 em { padding: 2px 4px; margin: 2px 10px; }
+            .demo5 .from_user, .demo5 .to_user_name { color: blue; }
+            .demo5 h3 { font-family: Arial; font-size: 13px; }
+            .demo5 ul li:nth-child(odd) { background-color: #EDEDED; padding: .5em 0 .5em 1em; }
+                .demo5 ul li:nth-child(odd) ul li:nth-child(odd) { background-color: #E0E0E0; padding: .5em 0 .5em 1em; }
+                    .demo5 ul li:nth-child(odd) ul li:nth-child(odd) ul li:nth-child(odd) { background-color: #D3D3D3; padding: .5em 0 .5em 1em; }
+        </style>
+
+        <script defer="defer" type="text/javascript" src="js/standalone-demo.js"></script>
+        <script defer="defer" type="text/javascript" src="../js/styleJSON.js"></script>
+        <script defer="defer" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+
+        <script>
+
+        //console.log( 'time completed:'+ stopwatch.getTime() + 'ms' );
+
+        window.onload = function(){
+
+     // jQuery plugin
+     if (jQuery) {
+
+       	 jQuery.styleJSON = jQuery.extend( {}, styleJSON );
+
+         jQuery.fn.styleJSON = function(){
+
+             return this.each(function(){
+                 debugger;
+             });
+         };
+     }
+
+        };
+        </script>
+	</head>
+	<body>
+
+        <div class="root">
+
+            <ul class="demos">
+
+                <li class="demo">
+                    <fieldset>
+                        <legend>
+	                       <input type="button" id="btndemo1" value="demo 1" />
+                       </legend>
+	                   <div class="demo1" id="demo1"></div>
+                   </fieldset>
+                </li>
+
+                <li class="demo">
+                    <fieldset>
+                        <legend>
+                            <input type="button" id="btndemo2" value="demo 2" />
+                        </legend>
+                        <div class="demo2" id="demo2"></div>
+                    </fieldset>	
+                </li>
+                
+                <li class="demo">
+                    <fieldset>
+                        <legend>
+	                       <input type="button" id="btndemo3" value="demo 3" />
+                       </legend>
+
+	                   <div class="demo3" id="demo3"></div>
+                   </fieldset>
+                </li>
+
+                <li class="demo">
+                    <fieldset>
+                        <legend>
+                            <input type="button" id="btndemo4" value="demo 4" />
+                        </legend>
+
+	                   <div class="demo4" id="demo4"></div>
+                   </fieldset>
+                </li>
+
+                <li class="demo">
+                    <fieldset>
+                        <legend>
+                            <input type="button" id="btndemo5" value="demo 5" />
+                        </legend>
+
+                        <div class="demo5" id="demo5"></div>
+                    </fieldset>
+                </li>
+
+                <li class="demo">
+                    <fieldset>
+                        <legend>
+                            <input type="button" id="btndemo6" value="demo 6" />
+                        </legend>
+
+                        <div class="demo6" id="demo6"></div>
+                    </fieldset>
+                </li>
+            </ul>
+
+        </div>
+
+        <div class="logo">
+            <span class="style">style</span><span class="json">JSON</span>
+        </div>
+
+	</body>
+</html>
