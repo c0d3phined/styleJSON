@@ -11,298 +11,161 @@ var styleJSON = {};
         return ret;
     };
 
-    Date.fromJSONDate = function( jsonDate ){
-    	return eval( jsonDate.replace( /\/Date\((-?\d+)\)\//gi, "new Date($1)" ) );
-    };
+    Object.isEmpty = function(o){ var i = 0,p; for ( p in o ) if ( p != 'isEmpty' ) i++; return i == 0; };
+
+    Date.fromDotNetJSONDate = function( jsonDate ){ return eval( jsonDate.replace( /\/Date\((-?\d+)\)\//gi, "new Date($1)" ) ); };
 
 	this.Context = function( ele ) {
 
 		var ele = typeOf( ele ) == 'object' ? ele : ( typeof ele == 'string' ? document.getElementById( ele ) : null );
-		if ( null == ele ) return debug( (new TypeError('Error> styleJSON.Context passed non-object and non-string.') ).message );
+		if ( null == ele ) return debug( errormsg.sjCtx, new TypeError( errormsg.sjCtx ) );
 
-		function _context( e ) {
+		function _context( e ) { this.ele = e.ele; this.id = getTime(); } 
 
-			var _ctx = null, // element context
+		_context.prototype = (function( el ){
+
+			var _ctx = el, // element context
 				_children = [],
 				_handleArray = function(){
-				for( var i = 0, a = [].slice.call( arguments ), fn = a[0], arg1 = a[1], clen = _ctx.length; i < clen; i++){
-					fn( arg1 );
-				}
+				for( var i = 0, a = [].slice.call( arguments ), fn = a[0], arg1 = a[1], clen = _ctx.length; i < clen; i++) fn( arg1 );
 			};
 
-			function init( e ){
-				_ctx = e;
-				return this;
-			}
-
-			this.setCtx = function(c) { _ctx = this.ele = c; };
-			this.getCtx = function() { return _ctx; };
-
-			// can get an element by id or get and change context to the found element.
-			this.get = function( a, switchCtx ){
-				var o = document.getElementById( a ) || null;
-				if ( !switchCtx ) return o;
-				else _ctx = this.ele = o;
-
-				return this;
-			};
-
-			this.make = function( a ){
-				return document.createElement( a );
-			};
-
-			this.children = function( a ) {
-				_children = [];
-				for ( var l = _ctx.children.length, nodes = _ctx.children, x = 0; x < l; x++) {
-					if ( a == nodes[ x ].tagName.toLowerCase() )
-						_children[_children.length] = nodes[ x ];
-				}
-
-				return this;
-			};
-
-			// returns element at the index
-			this.at = function( i ) {
-				return isArray( _children ) ? styleJSON.Context( _children[ i ] ) : null;
-			};
-
-			this.detach = function() {
-				var p = _ctx.parentNode;
-				if ( p ) p.removeChild( _ctx );
-
-				return this;
-			};
-
-			// append an element or append and change context to that element.
-			this.append = function( y, switchCtx ) {
-				if ( typeof y == 'object' ) y = _ctx.appendChild( y.ele || y );
-				else if ( typeof y == 'string' ) y = _ctx.appendChild( this.make( y ) );
-
-				this.setCtx( switchCtx ? y : _ctx );
-
-				return this;
-			};
-
-			// append to an element or append to and change context to the target element.
-			this.appendTo = function( y, switchCtx ) {
-				var x = y;
-				if ( typeof y == 'object' ) y.ele.appendChild( _ctx );
-				else if ( typeof y == 'string' ) this.get( y ).appendChild( _ctx );
-
-				this.setCtx( switchCtx ? x : _ctx );
-
-				return this;
-			};
-
-			this.text = function( a ){ _ctx.innerText = a; return this; };
-
-			this.html = function( a ) { _ctx.innerHTML = a; return this; };
-
-			this.removeClass = function( a ){
-				if ( a != '' ) {
-					var cl = _ctx.className, cns = cl != '' ? cl.split(' ') : [], len = n = cns.length;
-					while(n--){
-						if ( cns[n] == a ) cns[n] = '';
-					}
-					_ctx.className = cns.join(' ');
-				}
-				return this;
-			};
-
-			this.addClass = function( c ) {
-				if ( c != '' ) {
-					var cn = _ctx.className, cns = cn != '' ? cn.split(' ') : [], l = cns.length;
-					if ( l > 0 ){
-						cns[ l ] = c;
-						cn = cns.join(' ');
-					} else cn += (cn != '' ? ' ' : '') + c;
-					_ctx.className = cn;
-				}
-
-				return this;
-			};
-
-			this.attr = function( attr, val ){
-				if ( val ) _ctx.setAttribute( attr, val );
-				else return _ctx.getAttribute( attr ) || null;
- 
-				return this;
-			};
-
-			return init.call( this, ele );
-		}
-
-		return _context.call( { ele: ele || null } );
-	};
-
-
-    function make( ele ) {
-    	return styleJSON.Context( document.createElement( ele ) );
-    }
-
-	function typeOf( o ) {
-    	if ( typeof o == 'undefined' ) return 'undefined';
-    	if ( o == null ) return 'null'; // "fix" javascript's typeof null === 'object' gotcha
-    	var type = typeof o;
-
-    	switch( type ) {
-		default: return type;
-
-    	case 'object':
-    		return ( isArray( o ) ? 'array' : 'object' );
-    	}
-	}
-
-    function dressArrayData( arr ) { return { items : arr }; }
-
-    function dressTemplate( o ) { if ( o['key'] ) return o; else return { key: "items", items : o }; }
-
-    function preprocess( array, template ) {
-		if ( isArray( array ) ) {
 			return {
-				data: dressArrayData( array ),
-				template: dressTemplate( template )
+				setCtx :function(c) { _ctx = this.ele = c; },
+				getCtx :function() { return _ctx; },
+
+				getId :function(){ return this.id; },
+
+				// can get an element by id or get and change context to the found element.
+				get :function( a, switchCtx ){
+					var o = document.getElementById( a ) || null;
+					if ( !switchCtx ) return o;
+					else this.setCtx( o );
+
+					return this;
+				},
+
+				make :function( a ){
+					return document.createElement( a );
+				},
+
+				children :function( a, switchCtx ) {
+					if ( !a ) return _ctx.children;
+					_children = [];
+					for ( var l = _ctx.children.length, nodes = _ctx.children, x = 0; x < l; x++) {
+						if ( a == nodes[ x ].tagName.toLowerCase() )
+							_children[_children.length] = nodes[ x ];
+					}
+
+					return this;
+				},
+
+				// returns element at the index
+				at :function( i ) {
+					return isArray( _children ) ? ( _children.length > 0 ? styleJSON.Context( _children[ i ] ) : null ) : null;
+				},
+
+				detach :function() {
+					var p = _ctx.parentNode;
+					if ( p ) p.removeChild( _ctx );
+
+					return this;
+				},
+
+				// append an element or append and change context to that element.
+				append :function( y, switchCtx ) {
+					if ( typeof y == 'object' ) y = _ctx.appendChild( y.ele || y );
+					else if ( typeof y == 'string' ) y = _ctx.appendChild( this.make( y ) );
+
+					this.setCtx( switchCtx ? ( y.ele || y ) : _ctx );
+
+					return this;
+				},
+
+				// append to an element or append to and change context to the target element.
+				appendTo :function( y, switchCtx ) {
+					var x = y;
+					if ( typeof y == 'object' ) y.ele ? y.ele.appendChild( _ctx ) : y.appendChild( _ctx );
+					else if ( typeof y == 'string' ) this.get( y ).appendChild( _ctx );
+
+					this.setCtx( switchCtx ? ( x.ele || x ) : _ctx );
+
+					return this;
+				},
+
+				text :function( a ){ if ( !a ) return _ctx.innerText; else _ctx.innerText = a; return this; },
+
+				html :function( a ) { if ( !a) return _ctx.innerHTML; else _ctx.innerHTML = a; return this; },
+
+				removeClass :function( a ){
+					if ( !a ) {
+						_ctx.className = '';
+						return this;
+					}
+					if ( a != '' ) {
+						var cl = _ctx.className, cns = cl != '' ? cl.split(' ') : [], len = n = cns.length;
+						while(n--){
+							if ( cns[n] == a ) cns[n] = '';
+						}
+						_ctx.className = cns.join(' ');
+					}
+					return this;
+				},
+
+				addClass :function( c ) {
+					if ( c != '' ) {
+						var cn = _ctx.className, cns = cn != '' ? cn.split(' ') : [], l = cns.length;
+						if ( l > 0 ){
+							cns[ l ] = c;
+							cn = cns.join(' ');
+						} else cn += (cn != '' ? ' ' : '') + c;
+						_ctx.className = cn;
+					}
+
+					return this;
+				},
+
+				attr :function( attr, val ){
+					if ( val ) _ctx.setAttribute( attr, val );
+					else return _ctx.getAttribute( attr ) || null;
+	 
+					return this;
+				}
 			};
-		} else return { data: array, template: template };
-    }
+		}).call(_context, ele);
 
-	function formatDate( date, el, ddf ) {
-		if ( instance.defaults.fnFormatDate ) instance.defaults.fnFormatDate( date, el, ddf );
-		else {
-			date = dateFormat( date, ddf );
-			el.text( date );
-		}
-	}
-
-	function merge( a, b ){
-		for ( var p in a ) b[p] = ( typeOf( a[p] ) == 'object' ? merge( a[p], b[p] || {} ) : a[p] );
-		return b;
-	}
-
-    function getTime() {
-    	return new Date().getTime();
-	}
-
-    function isArray( o ) {
-    	if ( o && o.length >= 0 ) return true;
-    	else return false; 
-    }
-
-    function lazyload( type, txt, ele ) {
-		var sc = make( type ), s = sc.ele, h = document.getElementsByTagName( type )[0];
-
-		s.async = s.src = instance.defaults.dateFormatPath; // 'truthy' async value = true
-
-		// using jQuery's onload/onreadystatechange fix
-		s.onload = s.onreadystatechange = function( ) {
-
-			if ( !s.readyState || /loaded|complete/.test( s.readyState ) ) {
-
-				// use custom function
-				formatDate( txt, ele, instance.defaults.dateFormat );
-
-				// Handle memory leak in IE
-				s.onload = s.onreadystatechange = null;
-
-				// Remove the script
-				if ( s.parentNode ) {
-					s.parentNode.removeChild( s );
-				}
-
-				// Dereference the script and references
-				sc = s = ele = txt = undefined;
-			}
-		};
-
-		h.parentNode.insertBefore( s, h );
-    }
-
-	function _findInstance( _arguments  /** HtmlElement|HtmlElement ID, json_data, template, options|callback */, _allinst, _defaults ) {
-		args = [].slice.call( _arguments );
-
-		// get selected element
-		var ilen, b = document.body,
-			m = typeOf( args[0] ) == 'string' ? document.getElementById( args[0] ) || b : 
-				( typeOf( args[0] ) == 'object' ? args[0].ele || args[0] : b ),
-			id = parseInt( m.getAttribute('sj-id') || getTime() ), 
-			defs = defaults = typeOf( args[3] ) == 'function' ? merge( { completed: args[3] }, _defaults ) :
-				( typeOf( args[3] ) == 'object' ? merge( args[3], _defaults ) :  _defaults );
-
-		if ( ~(_allinst.length-1) ) {
-        	ilen = _allinst.length;
-        	while (ilen--) {
-        		if ( _allinst[ ilen ].instanceid == id ) {
-        			defaults = _allinst[ ilen ].defaults; // set defaults to current instance
-        			return _allinst[ ilen ];
-        		}
-        	}
-    	}
-
-		return _makeInstance( args[1], args[2], m, id, defs, _allinst );
-	}
-
-	function _makeInstance( data, template, matched, id, _defaults, _allinstances ) {
-
-		if ( typeOf( data ) == 'string' ) {
-			sj.xhr.call( sj, data, function(a,b,c){
-				instance = _makeInstance( a, template, matched, id, _defaults, _allinstances );
-				_init.call( that, instance );
-			});
-			return undefined;
+		function init( ){
+			var c = new _context( this );
+			return c;
 		}
 
-		var _inst, o = preprocess( data, template );
+		return init.call( { ele: ele || null } );
+	};
+	
 
-		_allinstances.push( _inst = { data: o.data, template: o.template, callback: _defaults.completed, matched: ( matched.ele ? matched : styleJSON.Context( matched ) ), instanceid: id, defaults : _defaults } );
-
-		_inst.matched.attr( 'sj-id', id ); // assign element id
-		_instances = _allinstances; // assign global
-		o = matched = _defaults = _allinstances = undefined; // garbage collect
-
-		return _inst;
-	}
-
-    function debug(msg){
-		if ( console && console.log ) console.log( msg );
-    }
-
-    function reset(){
-    	defaults = merge( _defsbak, {} );
-    }
-
-    function _init( inst /** instance */ ){
-    	var m = inst.matched, d = inst.data, t = inst.template;
-    	if ( inst.defaults.before ) inst.defaults.before.call( this, d, t, m );
-		sj.look.call( sj, t, d, m );
-		if ( inst.callback ) inst.callback.call( this, d, t, m );
-		reset();
-    }
-
-	function searchObj( ctxprop, mask ){
-		var t = typeOf( mask ), m;
-		switch( t ){
-		case 'object':
-				for( var p in mask ) {
-					if ( p == ctxprop ) return mask[p];
-				}
-			break;
-		}
-		return false;
-	}
-	/* end utility functions */
-
-
-	var that = this, instance = null,
-		_instances = [], args = [],
-        omap = (function(){ return 'section legend span div em h1 h2 h3 p pre i b q s sub sup ul ol li a abbr cite code footer header strong small label address article blockquote fieldset'.split( ' ' ); })(),
-        arrayTags = 'ol ul'.split( ' ' ), linkTag = 'a',
+	var that = this, instance = null, _idef /* instance.defaults */, _instances = [], args = [], timeout,
+    	errormsg = { sjCtx : 'styleJSON.Context passed non-object and/or non-string.', xhr : 'XHR request failed.', parse : { date: 'Date string parse error.', isodate : 'ISO8601 Date parse failed.' } },
+    	getMaxNum = function() { return _idef && _idef.maxnum ? _idef.maxnum : Number.MAX_VALUE; },
+        omap = 'section legend span div em h1 h2 h3 p pre i b q s sub sup ul ol li a abbr cite code footer header strong small label address article blockquote fieldset'.split( ' ' ),
+        isArray = function( o ) { if ( o && o.length >= 0 ) return true; else return false; },
         isArrayTag = function( str ) {return /ul|ol|li/gi.test(str);},
         isLink = function( str ) { return /http:/im.test(str); },
-        isHTMLLinkTag = function( str ) {return /<a[^>]*>(.*?)<\/a>/gi.test(str);},
+        isHTMLTag = function( str ){ return /<\/?[a-z][a-z0-9]*[^<>]*>/gi.test( str ); },
         isMultiClass = function( str ) { return str ? ( str.split( ' ' ).length > 1 ) : false; },
-        isDateString = function( d ){ return /Date\(\d*\)/g.test( d ); },
+        isdotNetDateString = function( d ){ return /Date\(\d*\)/g.test( d ); },
+        isISOStr = function( str ) { return /([0-9]{4})-(1[0-2]|0[1-9])-?(3[0-1]|0[1-9]|[1-2][0-9])T/g.test( str ); },
+        isXHRError = function( code ) { return /[45][01][0-9]/g.test( code ); },
+        isXHRSuccess = function( code ) { return /[23][0][0-7]/g.test( code ); },
         isDateFormatLoaded = function(){ try{ if ( typeOf( dateFormat ) == 'function' ) return true; else return false;}catch(e){return false;} },
+        make = function( ele ) { return styleJSON.Context( document.createElement( ele ) ); },
 		defaults = {
+
+    		// enable debugging console messages
+    		isDebug : true,
+
+    		// max number of list elements to parse & display
+    		// default is null.  when null, display all nodes
+    		maxnum : null,
 
 			// HTML tag to wrap around a link when a string containing
 			// 'http://[...]' exists and is parsed into an anchor (<a>) element
@@ -317,7 +180,7 @@ var styleJSON = {};
 			useDateFormat: true,
 
 			// path to date.format.js
-			dateFormatPath: "js/date.format.js",
+			dateFormatPath: "http://codephined.com/js/date.format.js",
 
 			// user-defined function for custom date formatting
 			fnFormatDate : null,
@@ -340,8 +203,28 @@ var styleJSON = {};
 			masks : {
 				// array of properties to apply date parsing to
 				date : null,
-				events : {},
-				special: {}
+
+				// target a node to add one of the events to it
+				events : {
+					/** 
+					 * possible node events
+					 * ex: node_one: {
+					 * 		down: function(){}
+					 * }
+					 * mousedown, mouseup, click, dblclick, mouseover, mouseout 
+					 */
+				},
+
+				// target a specific text node
+				special: {
+					/**
+					 * ex: my_node : '<span>%0</span>'
+					 * 		OR
+					 * ex: my_node : function(text, sJelement, element){
+					 * 		// do your own parsing, add text/html to the element passed
+					 * }
+					 */
+				}
 			}
 		},
 		_defsbak = function(d){var o = merge( d, {} ); if ( Object.freeze ) return Object.freeze( o ); else return o; }(defaults),
@@ -349,14 +232,16 @@ var styleJSON = {};
 		// main program
 		sj = {
 
-	        /**
+
+			/**
 	         * XHR Request function
 	         * @param {String} url The url to the JSON data to fetch.
 	         * @param {Function} fn The complete callback function.  
 	         * @returns {?Object}
 	         */
     		xhr : function( url, fn, type ){
-    			var req, urlstr = '?_='+ new Date().getTime(), url = url + urlstr,
+    			var req, urlstr = ( url.indexOf( '?' ) > -1 ? '&' : '?' ) +'_='+ getTime(), 
+    				url = url + urlstr,
     				fn = fn || function(){};
 				type = !type ? 'json' : type;
 
@@ -382,52 +267,58 @@ var styleJSON = {};
 
     	        if ( !req ) return false;
 
-    	        var complete = function( a ){
-    	        	if ( a.currentTarget.readyState == 4 ) {
-    	        		var t = a.currentTarget.responseText, data;
+    	        var trgt, complete = function( a ){
+    	        	trgt = a.currentTarget;
+    	        	if ( trgt.readyState == 4 ) {
+    	        		if ( isXHRSuccess( trgt.status ) ) {
+    	        			var t = trgt.responseText, data;
 
-    	        		switch (type) {
+	    	        		switch (type) {
 
-    	        		case 'json':
-        	        		if ( JSON && JSON.parse ) data = JSON.parse( t );
-        	        		else data = eval( '(' + t + ')');
-    	        			break;
-    	        		}
+	    	        		case 'json':
+	        	        		if ( JSON && JSON.parse ) data = JSON.parse( t );
+	        	        		else data = eval('(' + t + ')');
+	    	        			break;
+	    	        		}
 
-    	        		fn.call( this, data, t, a );
+	    	        		fn.call( this, data, t, a );
 
-    	        		req = data = a = undefined;
+	    	        		req = data = a = t = undefined;
+    	        		} else if ( isXHRError( trgt.status ) ) trgt.onerror( a );
     	        	}
     	        };
+
+    	        req.onerror = function(e){ debug( errormsg.xhr, new XHRError( e.currentTarget.status + ' ' + e.currentTarget.statusText ) ); };
     	        req.onreadystatechange = complete;
 
     	        try {
-    	        	req.open( 'GET', url, true);
-        	        if ( typeOf( req.setRequestHeader ) !== "undefined" ){ // Opera can't setRequestHeader()
-                        if ( typeOf( req.overrideMimeType === "function" ) ) {
+    	        	req.open( 'GET', url, true );
+        	        if ( typeof req.setRequestHeader !== "undefined" ){ // Opera can't setRequestHeader()
+                        if ( typeof req.overrideMimeType === "function" ) {
                         	req.overrideMimeType('application/json');
                         }
                         req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
                     }
         	        req.send( url );
                 } catch (e) {
-                	debug(e); 
+                	debug(errormsg.xhr, e); 
                 }
     		},
 
-	        /**
+
+    		/**
 	         * Attempt to "drill down" into a data source by the given key
 	         * @param {String} key String of names delimited by a period to 'drill-down' into a data source with.
 	         * @param {Object} obj The data source object to attempt drilling down into. 
 	         * @returns {?Object}
 	         */
 			drillDown: function( key, obj ) {
-				var arr = key.split('.'), arrlen = arr.length, o = obj;
+				var arr = key.split('.'), arrlen = arr.length, o = obj, i;
 
-	            for (var i = 0; i < arrlen; i++) {
-	                if ( o[ arr[i] ] ){
+	            for ( i = 0; i < arrlen; i++) {
+	                if ( o[ arr[i] ] && o[ arr[i] ] !== 'undefined' ){
 	                    o = o[ arr[i] ];
-	                }
+	                } else if ( i == (arrlen-1) && o[ arr[ i ] ] == null ) o = null;
 	            }
 
 	            return o;
@@ -438,26 +329,50 @@ var styleJSON = {};
 	         * process keys
 	         */
 	        processKey : function( arr, ele, parent ){
-    			for ( var _parent =  parent ? parent : ele, len = ( arr && isArray( arr ) ) ? arr.length : 0, x = 0; x < len; x++ ) {
+    			for ( var n = getMaxNum(), _parent =  parent ? parent : ele, len = ( arr && isArray( arr ) ) ? (arr.length > n ? n : arr.length) : 0, x = 0; x < len; x++ ) {
     				make( ele.ele.tagName.toLowerCase() ).appendTo( _parent );
     			}
 	        },
 
 
 	        /**
+	         * *
 	         * Parse a JSON date string and add parsed text to given element
 	         * @param {String} txt Formatted Date string NOT in ISO8601
 	         * @param {jQuery} ele jQuery wrapped element to operate on.
+	         * @param {String} type type of Date returned from isDateString().type
 	         */
-	        parseDate: function( txt, ele ){
+	        parseDate: function( txt, ele, type ){
+	        	var d = _idef, _date;
 	        	try{
-	        		txt = Date.fromJSONDate( txt );
-	        		isDate = true;
+	        		switch ( type ){
+	        		case '.net':
+		        		txt = Date.fromDotNetJSONDate( txt );
+	        			break;
+	        		case 'iso':
+	        			// http://ejohn.org/files/pretty.js
+	        			_date = new Date( txt.replace(/-/g,"/").replace(/[TZ]/g," ") );
+	        			if ( _date.getDate ) txt = txt.replace(/-/g,"/").replace(/[TZ]/g," ");
+	        			break;
+	        		}
 
-	        		if ( instance.defaults.useDateFormat && isDateFormatLoaded() ) formatDate( txt, ele, instance.defaults.dateFormat );
-	        		else lazyload( 'script', txt, ele ); // lazy-load the date format script
+	        		if ( d.useDateFormat && isDateFormatLoaded() ) formatDate( txt, ele, d.dateFormat );
+	        		else lazyload( 'script', txt, ele, d.dateFormatPath, 'dateFormat' ); // lazy-load the date format script
 	        	} catch(e){
-	        		debug('Error> Date string parse error.');
+	        		debug(errormsg.parse.date, e);
+	        	}
+	        },
+
+
+	        /**
+	         * 
+	         * @param events
+	         * @param ele
+	         */
+	        setEvent: function( events, ele ){
+	        	for( var p in events ) {
+//	        		var efn = typeof events[ p ] === 'function' ? events[ p ] : function(){};
+	        		addEvent( ele.ele, p, events[ p ] || function(){} );
 	        	}
 	        },
 
@@ -473,24 +388,43 @@ var styleJSON = {};
 	        parseText : function( txt, ele, to, property, ctxprop ) {
 	        	if ( txt == '' ) return;
 
-	        	var dateMask = searchObj( ctxprop, instance.defaults.masks.date ),
-	        		txtMask = searchObj( ctxprop, instance.defaults.masks.special );
+	        	var f=false, x, d = _idef,
+					isdate = isDateString( txt ).isdate,
+	        		dateMask = searchObj( ctxprop, d.masks.date ),
+	        		events = searchObj( ctxprop, d.masks.events ),
+	        		txtMask = searchObj( ctxprop, d.masks.special );
 
-            	if ( isHTMLLinkTag( txt ) ) {	// <a></a>
+	        	if ( !Object.isEmpty(events) ) {
+	        		this.setEvent( events, ele );
+	        	}
+
+            	if ( isHTMLTag( txt ) ) {	// <a></a>
             		ele.html( txt );
-            		return;
+            		f = true;
         		}
 
-            	if ( isLink( txt ) ) { // http://link
-        			if ( ele.ele.tagName == "A" ) ele.detach();
-            		to.append( make( instance.defaults.linkWrapTag ).addClass( ctxprop ).append( make( property ).attr( 'href', txt ).text( txt ) ) );
-            		return;
+            	if ( isLink( txt ) && !f ) { // http://link
+            		if ( txt.indexOf( 'http://' ) > -1 ) {
+            			txt = txt.replace( /((http|https):\/\/[a-zA-Z0-9\S]*)/g, "<a href=\"$1\">$1</a>");
+            			ele.html( txt );
+            		}
+//        			if ( ele.ele.tagName == "A" ) ele.detach();
+//            		to.append(  ); //make( d.linkWrapTag ).addClass( ctxprop ).append( make( property ).attr( 'href', txt ).text( txt ) ) );
+            		f = true;
             	}
 
             	if ( dateMask ) dateMask( new Date( txt ) || txt, ele.ele ); 
-            	else if ( txtMask ) txtMask( txt, ele.ele );
-            	else ele.text( txt );
-
+            	else if ( txtMask ) {
+            		if ( typeof txtMask == 'function' ) txtMask( txt, ele, ele.ele );
+            		else if ( typeof txtMask == 'string' ) {
+//            			x = txtMask.match( /%+\d{1}/gi ), l = x.length;
+            			if ( txt = txtMask.replace( /%+\d{1}/gi, txt ) ) {
+//            				txt = txtMask.replace( /%+\d{1}/gi, txt );
+            				this.parseText( txt, ele, to, property, '' );
+            			}
+            		}
+            	}
+            	else if ( !f && !isdate ) ele.text( txt );
 	        },
 
 
@@ -501,37 +435,32 @@ var styleJSON = {};
 	         * @param {jQuery} to Element to append to.
 	         * @param {Object} dataCtx Data context.
 	         * @param {Object} ele Current element to operate upon. 
+	         * @param {Integer} idx 
 	         */
 	        parseString: function( property, ctx, to, dataCtx, ele, idx ) {
 	        	// check data for ctx[ property ]
 	        	var f = false,
 	        		cprop = !isArray( ctx ) && ctx[ property ] || ( isArray( ctx ) ? ctx[ idx ] : '' ),
         			txt = !isArray( ctx ) && dataCtx[ cprop ] || ( isArray( ctx ) ? dataCtx[ ctx[ idx ] ] : '' ),
-        			txt = !txt ? '' : txt,
+        			txt = txt || '',
 					ismulti = isMultiClass( cprop ),
-					isdate = isDateString( txt ); // is data node a date?
+					o = isDateString( txt ); 
 
     			if ( ismulti && !f ) {
     				for ( var classes = cprop.split( ' ' ), nclass = classes.length, v = 0; v < nclass; v++) {
-    					ele.addClass( classes[ v ] );
-    					txt = dataCtx[ classes[ v ] ] || '';
-    					isdate = isDateString( txt );
-
-    					if ( isdate && !f ){
-    						this.parseDate( txt, ele );
-    						f = true;
-    					}
+    					this.parseString( property, classes, to, dataCtx, ele, v );
     				}
+					return;
     			}
 
-    			if ( isdate && !f ) {
-    				this.parseDate( txt, ele );
+    			if ( o.isdate && !f ) {
+    				this.parseDate( txt, ele, o.type );
     				f = true;
     			}
 
-    			ele.addClass( !f ? cprop : '' ).appendTo( to );
+    			ele.addClass( !f || o.isdate ? cprop : '' ).appendTo( to );
 
-    			if ( txt == '' && instance.defaults.stripEmptyNodes && !f ) ele.detach();
+    			if ( txt == '' && _idef.stripEmptyNodes && !f && !isArray( ctx ) ) ele.detach();
 
     			this.parseText( txt, ele, to, property, cprop );
 	        },
@@ -558,7 +487,7 @@ var styleJSON = {};
 	                    switch ( type ) {
 
 		                    case "string":
-		                        if ( !key ) {
+		                        if ( !key || dataCtx[ cprop ] ) { // 12.13.2011 bug with node not being parsed cuz it had key
 		                        	this.parseString( property, ctx, to, dataCtx, ele );
 		                        } else {
 		                            if ( isArrayTag( property ) ) {
@@ -602,7 +531,7 @@ var styleJSON = {};
 	         */
 	        look: function( ctx, dataCtx, to ) {
 
-	            var props = Object.keys( ctx ), plen = props.length, ctype = typeOf( ctx );
+	            var props = Object.keys( ctx ), plen = props.length, ctype = typeOf( ctx ), d = _idef;
 
 	            switch ( ctype ) {
 
@@ -613,7 +542,7 @@ var styleJSON = {};
 	            			p = props[i], type = typeOf( ctx[ p ] );
 
 	            		if ( isArray( dataCtx ) && !isArray( ctx ) ) {
-	            			var n = dataCtx.length;
+	            			var n = dataCtx.length, n = n > getMaxNum() ? getMaxNum() : n; // enforce max number of elements
 	            			for ( var v = 0; v < n; v++ ) {
 	            				ele = to.children('li').at( v );
 	            				if ( ele ) this.look( ctx, dataCtx[ v ], ele );
@@ -630,61 +559,35 @@ var styleJSON = {};
 
 	            		if ( isHtml || p == 'key' ) continue;
 
-	            		// parse unknown nodes
+	            		/* parse unknown nodes */
 	            		switch ( type ) {
 
-	            		case "string":
-	            			debugger;
-	            			var txt = dataCtx[ ctx[ p ] ] ? dataCtx[ ctx[ p ] ] : '';
-	            			// TODO: check data for ctx[p]
-	            			to.addClass( ctx[ p ] );
-	            			if ( !isHTMLLinkTag( txt ) && !isLink( txt ) ) {
-	            				to.text( txt );
-	            			} else if ( isLink( txt ) ) {
-	            				to.append( make( instance.defaults.linkWrapTag ).addClass( ctx[ p ] ).append( make( p ).attr( 'href', txt ).text( txt ) ) );
-	            			} else if ( isHTMLLinkTag( txt ) ) {
-	            				to.html( txt );
-	            			}
-	            			break;
+	            		case "string": /* unimplemented because use-case is discouraged */ break;
 
 	            		case "object":
-	            			var div = make( 'div' ), drilled = false;
+	            			var div = make( 'div' ), drilled = false, arr;
 	            			if ( key ) {
-	            				var arr = this.drillDown( key, dataCtx );
+	            				arr = this.drillDown( key, dataCtx );
 	            				if ( isArray( arr ) ) {
 	            					dataCtx = arr;
-	            					div.detach();
-	            					div = make( instance.defaults.useArrayTag );
-	            					div.addClass( p )
-	            						.appendTo( to );
+	            					div = make( d.useArrayTag ).addClass( p ).appendTo( to );
 	            					drilled = true;
 	            				}
-	            				this.processKey( arr, make('li'), div );
+	            				if ( arr ) this.processKey( arr, make('li'), div );
 	            			}
 	            			if ( !drilled ) div.addClass( p ).appendTo( to );
-	            			this.look( ctx[ p ], dataCtx[ p ] || dataCtx, div );
+            				this.look( ( typeOf( dataCtx[p] ) != 'null' ? ctx[ p ] : {} ), dataCtx[p] || dataCtx, div );
 	            			break;
 	            		}
 	            	} // end property loop
 	            	break;
 
 	            case "string":
-//    	            		parseString( props[ ctx ], ctx, to, dataCtx, to );
+//    	            parseString( props[ ctx ], ctx, to, dataCtx, to );
 	            	to.addClass( ctx );
 	            	break;
 	            }
 	        },
-
-
-	        /**
-	         * Insert defaults into application
-	         * @param {Object} opts default options to set in the application
-	         * @returns {Inherited}
-	         */
-	        setup : function( opts ) {
-				defaults = merge( opts, defaults );
-				return that;
-			},
 
 
 	        /**
@@ -698,10 +601,237 @@ var styleJSON = {};
 			}
 		};
 
-        this.instances = _instances;
+	this.isDebug = defaults.isDebug;
 
-		this.setup = sj.setup;
+    this.instances = _instances;
 
-		this.init = sj.init;
+	this.lazyloads = {};
+
+	this.activeLazy = [];
+
+	this.addEvent = addEvent;
+
+	this.init = sj.init;
+
+
+	function typeOf( o ) {
+    	if ( typeof o === 'undefined' ) return 'undefined';
+    	if ( o == null ) return 'null'; // "fix" javascript's typeof null === 'object' gotcha
+    	var type = typeof o;
+
+    	switch( type ) {
+		default: return type;
+
+    	case 'object':
+    		return ( isArray( o ) ? 'array' : 'object' );
+    	}
+	}
+
+    function dressArrayData( arr ) { return { items : arr }; }
+
+    function dressTemplate( o ) { if ( o['key'] ) return o; else return { key: "items", items : o }; }
+
+    function debug(msg, ex){ 
+    	if ( _idef.isDebug && console && console.error && console.warn ) {
+    		console.error(msg);
+    		console.error(ex);
+    		console.error(ex.stack);
+    	} else if ( _idef.isDebug && window.opera && opera.postError ) {
+    		opera.postError(msg, ex);
+    	}
+    }
+
+    function preprocess( array, template ) {
+		if ( isArray( array ) ) {
+			return {
+				data: dressArrayData( array ),
+				template: dressTemplate( template )
+			};
+		} else return { data: array, template: template };
+    }
+
+	function formatDate( date, el, ddf ) {
+		if ( _idef.fnFormatDate ) _idef.fnFormatDate( date, el, ddf );
+		else {
+			date = dateFormat( date, ddf );
+			el.text( date );
+		}
+	}
+
+	function merge( a, b ){ for ( var p in a ) b[p] = ( typeOf( a[p] ) == 'object' ? merge( a[p], b[p] || {} ) : a[p] ); return b; }
+
+    function getTime() { return new Date().getTime(); }
+
+    function inArray( elem, array ) {
+    	if ( array.indexOf ) return array.indexOf( elem );
+    	for ( var i = 0, len = array.length; i < len; i++ ) if ( array[ i ] === elem ) return i;
+    	return -1;
+    }
+
+    function removeActiveLazy( script ){
+    	var n;
+		if ( ~( n = inArray( script, styleJSON.activeLazy ) ) ) styleJSON.activeLazy.splice( n, 1 );
+    }
+
+    function lazyload( type, txt, ele, src, name ) {
+		var s = make( type ).ele, h = document.getElementsByTagName( type )[0], llname = name || src, d = _idef;
+
+		if ( styleJSON.lazyloads[ llname ] ) {
+			styleJSON.lazyloads[ llname ].push( { txt:txt, ele:ele, format:d.dateFormat } );
+			return;
+		}
+
+		if ( !styleJSON.lazyloads[ llname ] ) styleJSON.lazyloads[ llname ] = [];
+
+		s.async = s.src = src; // 'truthy' async value = true
+
+		// using jQuery's onload/onreadystatechange fix
+		s.onload = s.onreadystatechange = function( ) {
+
+			if ( !s.readyState || /loaded|complete/.test( s.readyState ) ) {
+
+				// use custom function
+				formatDate( txt, ele, d.dateFormat );
+
+				if ( styleJSON.lazyloads[ llname ] ) {
+					for( var ll = styleJSON.lazyloads[ llname ], len = ll.length, i=0; i< len; i++ )
+						formatDate( ll[i].txt, ll[i].ele, ll[i].format );
+				}
+
+				// Handle memory leak in IE
+				s.onload = s.onreadystatechange = null;
+
+				removeActiveLazy( s );
+
+				if ( s.parentNode ) s.parentNode.removeChild( s );
+
+				// Dereference the script and references
+				s = ele = txt = undefined;
+			}
+		};
+
+		s.onerror = function(){
+			removeActiveLazy( s );
+		};
+
+		styleJSON.activeLazy.push( s );
+
+		h.parentNode.insertBefore( s, h );
+    }
+
+	function _findInstance( _arguments  /** HtmlElement|HtmlElement ID, json_data, template, options|callback */, _allinst, _defaults ) {
+		args = [].slice.call( _arguments );
+
+		// get selected element
+		var ilen, b = document.body,
+			m = typeOf( args[0] ) == 'string' ? document.getElementById( args[0] ) || b : 
+				( typeOf( args[0] ) == 'object' ? args[0].ele || args[0] : b ),
+			id = parseInt( m.getAttribute('sj-id') || getTime() ), 
+			defs = defaults = typeOf( args[3] ) == 'function' ? merge( { completed: args[3] }, _defaults ) :
+				( typeOf( args[3] ) == 'object' ? merge( args[3], _defaults ) :  _defaults );
+
+		if ( ~(_allinst.length-1) ) {
+        	ilen = _allinst.length;
+        	while (ilen--) {
+        		if ( _allinst[ ilen ].instanceid == id ) {
+        			defaults = _idef = _allinst[ ilen ].defaults; // set defaults to current instance
+        			return _allinst[ ilen ];
+        		}
+        	}
+    	}
+
+		return _makeInstance( args[1], args[2], m, id, defs, _allinst );
+	}
+
+	function _makeInstance( data, template, matched, id, _defaults, _allinstances ) {
+
+		if ( typeOf( data ) == 'string' ) {
+
+			sj.xhr.call( sj, data, function(a,b,c){
+				instance = _makeInstance( a, template, matched, id, _defaults, _allinstances );
+				_init.call( that, instance );
+			});
+			return;
+		}
+
+		var _inst, o = preprocess( data, template );
+
+		_allinstances.push( _inst = { data: o.data, template: o.template, callback: _defaults.completed, matched: ( matched.ele ? matched : styleJSON.Context( matched ) ), instanceid: id, defaults : _defaults } );
+
+		_inst.matched.attr( 'sj-id', id ); // assign element id
+		_instances = _allinstances; // assign global
+		o = matched = _defaults = _allinstances = undefined; // garbage collect
+
+		_idef = _inst.defaults;
+		return _inst;
+	}
+
+    function reset(){
+    	defaults = merge( _defsbak, {} );
+    	instance = null;
+    }
+
+    function addEvent( el, event, fn ) {
+
+    	if ( !el.trackedEvents ) el.trackedEvents = {};
+
+    	if ( !el.trackedEvents[ 'on'+event ] ) {
+    		el.trackedEvents[ 'on'+event ] = [];
+
+    	    el[ 'on'+event ] = function () {
+    	    	for ( var i = 0, len = el.trackedEvents[ 'on'+event ].length; i < len; i++) {
+    	    		el.trackedEvents['on'+ event ][ i ]();
+    	    	}
+    	    };
+    	}
+  	  	fn.$id = addEvent.$$id++;
+
+  	  	el.trackedEvents[ 'on'+event ].push( fn );
+    }
+    addEvent.$$id = 0;
+
+	function searchObj( ctxprop, mask ){
+		if ( typeOf( mask ) == 'object' ) { for( var p in mask ) if ( p == ctxprop ) return mask[p]; }
+		return false;
+	}
+
+    function isDateString( str ) {
+    	var isdate = false, type = 'none';
+    	if ( isdotNetDateString( str ) )  { 
+    		isdate = true; 
+    		type = '.net';
+    	} else if ( isISOStr( str ) )  {
+    		isdate = true;
+    		type = 'iso';
+    	}
+    	return {isdate: isdate, type: type };
+    }
+
+    function wait( ms, fn, oncomplete ) {
+		if (fn.timeout) clearTimeout(fn.timeout);
+		fn.timeout = setTimeout(function(){ if ( !fn() ) wait( ms, fn, oncomplete ); else oncomplete(); }, ms);
+    }
+
+    function _init( inst /** instance */ ){
+    	var m = inst.matched, d = inst.data, t = inst.template;
+    	if ( inst.defaults.before ) inst.defaults.before.call( this, d, t, m );
+		sj.look.call( sj, t, d, m );
+
+		if ( this.activeLazy.length == 0 ){
+			if ( inst.callback ) inst.callback.call( this, d, t, m );
+		} else if ( inst.callback ) {
+			wait( 50, function(){
+				return !that.activeLazy.length > 0;
+			}, function(){
+				inst.callback.call( that, d, t, m );
+			});
+		}
+		reset();
+    }
+	/* end utility functions */
+
+	function XHRError(message) { this.name = "XHRError"; this.message = message || "XHR Failed"; }
+	XHRError.prototype = new Error();
+	XHRError.prototype.constructor = XHRError;
 
 }).call( styleJSON );
