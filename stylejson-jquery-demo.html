@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>styleJSON</title>
+
+        <link href="css/demos.css" type="text/css" rel="Stylesheet" />
+        <link href='http://fonts.googleapis.com/css?family=Terminal+Dosis' rel='stylesheet' type='text/css'>
+
+        <script defer="defer" src="http://code.jquery.com/jquery-1.7.min.js" type="text/javascript">
+            jQuery.holdReady( true );
+        </script>
+
+        <script defer="defer" type="text/javascript" src="js/styleJSON.js"></script>
+        <script defer="defer" type="text/javascript" src="js/styleJSON.jQuery.addon.js"></script>
+        <script defer="defer" type="text/javascript" src="js/demo.js">
+            console.log('demo-loaded');
+            jQuery.holdReady( false );
+        </script>
+
+    </head>
+    <body>
+        <div class="heading">Demos<span class="version">styleJSON - v1.2</span></div>
+
+        <div class="demobtn"><input type="button" id="demo1" value="Demo 1" /><input type="button" id="reset1" value="Reset" /> Fetch JSON data-source</div>
+        <div class="demo root"></div>
+
+        <div class="demobtn"><input type="button" id="demo2" value="Demo 2" /><input type="button" id="reset2" value="Reset" /></div>
+        <div class="demo root2"></div>
+
+        <div class="demobtn"><input type="button" id="demo3" value="Demo 3" /><input type="button" id="reset3" value="Reset" /></div>
+        <div class="demo root3"></div>
+
+        <div class="demobtn"><input type="button" id="demo4" value="Demo 4" /><input type="button" id="reset4" value="Reset" /></div>
+        <div class="demo root4"></div>
+
+        <div class="demobtn"><input type="button" id="demo5" value="Demo 5" /><input type="button" id="reset5" value="Reset" /> 
+           Date parsing example -- fetches & loads <code>date.format.js</code> by ajax (jQuery.getScript).<br/>
+           Also demonstrating using the new default, a custom function used to format the Date and append to the element in your own way.<br/>
+           <code>$.styleJSON.defaults.fnFormatDate</code>
+        </div>
+        <div class="demo root5"></div>
+    </body>
+</html>
