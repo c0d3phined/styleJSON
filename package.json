@@ -1,0 +1,9 @@
+{
+    "name"    : "styleJSON",
+    "author"  : "Daniel Brooks - http://github.com/c0d3phined",
+    "version" : "2",
+    "bin"     : {
+            "styleJSON"   : "./bin/styleJSON.js",
+            "jQuery.styleJSON"   : "./bin/styleJSON.jQuery.addon.js"
+    }
+}

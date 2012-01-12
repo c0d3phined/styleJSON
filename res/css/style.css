@@ -1,0 +1,104 @@
+html {
+  font-family: Arial; }
+  html a {
+    font-size: 13px;
+    color: #a9b9b9;
+    text-decoration: underline; }
+    html a:hover {
+      text-decoration: none; }
+  html .nav {
+    margin: 30px 0; }
+    html .nav a {
+      position: relative;
+      float: right; }
+      html .nav a.online {
+        top: 20px; }
+      html .nav a.home {
+        float: left;
+        margin: 10px 0 5px 40px; }
+  html .heading {
+    margin-top: 20px;
+    font-size: 22px;
+    margin-left: 15px; }
+  html .text {
+    font-size: 13px; }
+  html .bugnum {
+    font-weight: bold;
+    font-size: 14px; }
+  html .codes {
+    margin: 5px 5px; }
+    html .codes code {
+      font-family: Courier New;
+      font-size: 14px;
+      margin: 5px 3px;
+      padding: 3px 3px; }
+  html code {
+    font-family: Courier New;
+    font-size: 12px;
+    color: #000; }
+  html hr {
+    color: #000;
+    background-color: #000;
+    width: 100%; }
+  html ul {
+    margin: 20px auto 0 auto;
+    width: 90%;
+    list-style-type: lower-roman;
+    list-style-position: outside; }
+    html ul li {
+      margin: 10px 0;
+      padding: 5px 20px 0 5px; }
+      html ul li .finished {
+        text-decoration: line-through;
+        margin: 10px 0;
+        padding: 5px 20px 0 5px; }
+  html table {
+    border: 0 solid #000;
+    margin: 0 auto;
+    width: 90%;
+    height: 100%; }
+    html table.changelog {
+      margin: 0 auto 25px auto; }
+      html table.changelog tbody tr {
+        padding: 10px;
+        margin: 5px;
+        border: 1px solid #000; }
+    html table caption {
+      margin-top: 25px;
+      float: left;
+      position: relative;
+      font-size: 20px;
+      font-weight: bold; }
+    html table thead {
+      margin: 15px 0; }
+      html table thead tr {
+        margin: 15px 0;
+        padding: 5px 5px; }
+        html table thead tr td {
+          font-size: 24px;
+          font-weight: bold;
+          padding-left: 100px;
+          border-bottom: 1px solid #000; }
+          html table thead tr td span.small {
+            padding-right: 100px;
+            vertical-align: bottom;
+            position: relative;
+            float: right;
+            font-weight: normal;
+            font-size: 12px; }
+    html table tbody {
+      margin-top: 20px;
+      font-size: 14px; }
+      html table tbody tr {
+        margin: 10px 5px;
+        padding: 5px 5px; }
+        html table tbody tr.header td.header {
+          font-weight: bold;
+          color: #fff;
+          background-color: #545454; }
+        html table tbody tr:nth-child(even) {
+          background-color: transparent; }
+        html table tbody tr:nth-child(odd) {
+          background-color: #F2F2F2; }
+        html table tbody tr td {
+          padding: 10px 15px; }

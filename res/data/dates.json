@@ -1,0 +1,7 @@
+{
+    "desc" : "different styles of dates as they appear in JSON",
+    "dates" : {
+        "ISO8601" : "2008-01-28T20:24:17Z",
+        "dotNETstyle" : "\/Date(1314151709000)\/"
+    }
+}

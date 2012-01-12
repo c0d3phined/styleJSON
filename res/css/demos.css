@@ -1,0 +1,25 @@
+@CHARSET "utf-8";
+
+body {margin:0 auto; padding:0; width: 80%; font-family: Arial; font-size: 14px;}
+input[type=button] { border:1px solid #000; background-color:#fff; color:#000; }
+
+span.author { font-family:Verdana; font-size: 16px; }
+
+ul.items { list-style-type: lower-roman; font-size: 16px;}
+
+ul {margin:10px 0 0 15px; font-family: 'Terminal Dosis', sans-serif; list-style-type: none; font-size: 14px;}
+	ul li { margin:5px 0 0 10px;}
+		ul li span { padding: 5px 10px 0 0; margin: 5px 20px 0 0; }
+	ul.levels li span.id { color: blue; }
+	ul.levels li span.title { position: relative; left: 20px; }
+
+
+.heading { font-size: 20px; font-family: Verdana; color:#000; margin:20px auto 0 auto; width: 80%;}
+	.heading .version { position: relative; float:right; font-weight: bold; font-size: 14px; font-family: Courier New;} 
+.demo {margin:0 0 35px 0; padding:10px 15px; border:1px solid #000; width:auto;}
+.demobtn {margin: 10px 0 0 0; padding:10px; }
+
+.demo5 { height: auto; }
+
+.date { left: 50%; position: absolute; float:right; display: block; color: #000; font-size: 12px; height: auto;}
+    span.date em { display: block; padding-left: 10px; }

@@ -1,0 +1,170 @@
+
+html {
+    font-family: Arial;
+
+    a{
+        font-size: 13px;
+        color: #a9b9b9;
+        text-decoration: underline;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    .nav {
+        margin:30px 0;
+
+        a {
+            position: relative;
+            float: right;
+
+            &.online { top: 20px; }
+            &.home {
+                float : left;
+                margin: 10px 0 5px 40px;
+            }
+        }
+    }
+
+    .heading {
+        margin-top:20px; 
+        font-size: 22px; 
+        margin-left: 15px;
+    }
+
+    .text {
+        font-size: 13px;
+    }
+
+    .bugnum {
+        font-weight:bold; 
+        font-size: 14px;
+    }
+
+    .codes {
+        margin:5px 5px;
+
+        code {
+            font-family: Courier New; 
+            font-size: 14px; 
+            margin: 5px 3px; 
+            padding: 3px 3px;
+        }
+    }
+
+    code {
+        font-family: Courier New; 
+        font-size: 12px; 
+        color: #000;
+    }
+
+    hr {
+        color: #000; 
+        background-color:#000; 
+        width: 100%;
+    }
+
+    ul {
+        margin: 20px auto 0 auto; 
+        width: 90%; 
+        list-style-type: lower-roman; 
+        list-style-position: outside;
+
+        li {
+            margin: 10px 0; 
+            padding: 5px 20px 0 5px;
+
+            .finished {
+                text-decoration: line-through; 
+                margin: 10px 0; 
+                padding: 5px 20px 0 5px;
+            }
+        }
+    }
+
+    table {
+        border: 0 solid #000; 
+        margin: 0 auto; 
+        width: 90%; 
+        height: 100%;
+
+        &.changelog{
+            margin: 0 auto 25px auto;
+
+            tbody {
+                tr {
+                    padding: 10px; 
+                    margin: 5px; 
+                    border: 1px solid #000;
+                }
+            }
+        }
+
+        caption {
+            margin-top: 25px; 
+            float: left;
+            position: relative; 
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        thead {
+            margin: 15px 0;
+
+            tr {
+                margin: 15px 0; 
+                padding: 5px 5px;
+
+                td {
+                    font-size: 24px; 
+                    font-weight: bold; 
+                    padding-left: 100px; 
+                    border-bottom: 1px solid #000;
+
+                    span.small {
+                        padding-right: 100px; 
+                        vertical-align: bottom; 
+                        position: relative; 
+                        float: right; 
+                        font-weight: normal; 
+                        font-size: 12px;
+                    }
+                }
+            }
+        }
+        
+        tbody {
+            margin-top: 20px; 
+            font-size: 14px;
+
+            tr {
+                margin: 10px 5px; 
+                padding: 5px 5px;
+
+                &.header {
+                    td.header {
+                        font-weight: bold; 
+                        color:#fff; 
+                        background-color: #545454;
+                    }
+                }
+
+                &:nth-child(even) {
+                    background-color: transparent;
+                }
+
+                &:nth-child(odd) {
+                    background-color: #F2F2F2;
+                }
+
+                td {
+                    padding: 10px 15px;
+                }
+            }
+        }
+    }
+
+    table.changelog {
+    }
+}

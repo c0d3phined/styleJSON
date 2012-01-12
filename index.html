@@ -1,52 +1,205 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>styleJSON</title>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>styleJSON Standalone</title>
 
-		<link href='http://fonts.googleapis.com/css?family=Terminal+Dosis' rel='stylesheet' type='text/css'>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript"></script>
-        <script type="text/javascript" src="js/jquery.styleJSON-v1.2.js"></script>
+        <link href='http://fonts.googleapis.com/css?family=Inder' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Terminal+Dosis' rel='stylesheet' type='text/css'>
+        <link href='res/css/standalone-demo.css' rel='stylesheet' type='text/css'>
 
-        <!-- <script type="text/javascript" src="js/date.format.js"></script> -->
-        <script type="text/javascript" src="js/demo.js"></script>
+        <script type="text/javascript" src="res/js/standalone-demo.js"></script>
+        <script type="text/javascript" src="bin/styleJSON.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
 
-        <style type="text/css">
-			body {margin:0 auto; padding:0; width: 80%; font-family: Arial; font-size: 14px;}
-			.heading { font-size: 20px; font-family: Verdana; color:#000; margin:20px auto 0 auto; width: 80%;}
-				.heading .version { position: relative; float:right; font-weight: bold; font-size: 14px; font-family: Courier New;} 
-			.demo {margin:0 0 35px 0; padding:10px 15px; border:1px solid #000; width:auto;}
-			.demobtn {margin: 10px 0 0 0; padding:10px; }
-			input[type=button] { border:1px solid #000; background-color:#fff; color:#000; }
-			span.author { font-family:Verdana; font-size: 16px; }
+        <script type="text/javascript">
+        $(function(){
+            'use strict';
+
+            var make = function(str){
+                return $( document.createElement( str ) );
+               },
+               items = [{text:'about'},{text:'demos'},{text:'tests'},{text:'changelog', src: 'changelog.html'}];
+
+            $(items).each(function(i, item){
+                $('.logo ul').append(
+              		  make( 'li' ).append(
+             				  make( 'div' ).text( item.text ) )
+       				  .click(function(e){
+       					  var $t = $(this), loc = window.location, pname = loc.pathname;
+       					  if ( !item.src )
+      					     $( 'html, body' ).stop().animate({ scrollTop: $( '#'+items[$t.index()].text ).offset().top - 45 }, 500);
+       					  else {
+       					    loc.href = pname.replace( pname.substr( pname.lastIndexOf('/')+1, pname.length ), '' ) + item.src;
+       					  }
+       				  })
+             	);
+            });
+
+            $(window).scroll(function(e){
+            	var $f = $('footer');
+            	if ( pageYOffset > ( ( $('.root').outerHeight() - (screen.availHeight - ($(window).height()/2) ) ) - 60 ) ) {
+            		$f.removeClass('hide');
+            	} else {
+            		if ( !$f.hasClass('hide') ) $f.addClass('hide');
+            	}
+            });
+
+        });
+        </script>
+
+	</head>
+	<body>
+
+        <div class="root">
+
+            <!--  -->
+            <div id="about" class="about">
+                <p><em class="sj">styleJSON</em> is a light script, at around <code>12KB</code> minified, that can 'style' a JSON data-source by supplying a simple, hierarchical object.</p>
+            </div>
+
+            <hr size="1" />
+
+            <!-- demos -->
+            <ul id="demos" class="demos">
+
+                <li class="demo">
+                    <fieldset>
+                        <legend>
+	                       <input type="button" id="btndemo1" value="demo 1" />
+                       </legend>
+	                   <div class="demo1" id="demo1"></div>
+                   </fieldset>
+                </li>
+
+                <li class="demo">
+                    <div class="header">You may notice the higher <em>execution time</em> on this demo, it is because the timer was counting while the <code>dateFormat</code> library was being lazy-loaded.
+                        When the <code>dateFormat</code> script loaded, and subsequent operations completed, <i>then</i> the <code>completed</code> callback is called.</div>
+                    <fieldset>
+                        <legend>
+                            <input type="button" id="btndemo2" value="demo 2" />
+                        </legend>
+                        <div class="demo2" id="demo2"></div>
+                    </fieldset>	
+                </li>
+                
+                <li class="demo">
+                    <fieldset>
+                        <legend>
+	                       <input type="button" id="btndemo3" value="demo 3" />
+                       </legend>
+
+	                   <div class="demo3" id="demo3"></div>
+                   </fieldset>
+                </li>
+
+                <li class="demo">
+                    <fieldset>
+                        <legend>
+                            <input type="button" id="btndemo4" value="demo 4" />
+                        </legend>
+
+	                   <div class="demo4" id="demo4"></div>
+                   </fieldset>
+                </li>
+
+                <li class="demo">
+                    <div class="header">
+                        Demonstration of the (theoretical) infinite levels that <em class="sj">styleJSON</em> can handle. 
+                    </div>
+                    <fieldset>
+                        <legend>
+                            <input type="button" id="btndemo5" value="demo 5" />
+                        </legend>
+
+                        <div class="demo5" id="demo5"></div>
+                    </fieldset>
+                </li>
+
+                <li class="demo">
+                    <fieldset>
+                        <legend>
+                            <input type="button" id="btndemo6" value="demo 6" />
+                        </legend>
+
+                        <div class="demo6" id="demo6"></div>
+                    </fieldset>
+                </li>
+
+                <li class="demo">
+                    <fieldset>
+                        <legend>
+                            <input type="button" id="btndemo7" value="demo 7" />
+                        </legend>
+
+                        <div class="demo7" id="demo7"></div>
+                    </fieldset>
+                </li>
+
+                <li class="demo">
+                    <div class="header">Twitter feed excerpt</div>
+                    <fieldset>
+                        <legend>
+                            <input type="button" id="btndemo8" value="demo 8" />
+                        </legend>
+
+                        <div class="demo8" id="demo8"></div>
+                    </fieldset>
+                </li>
+            </ul>
 
 
-            ul.items { list-style-type: lower-roman; font-size: 16px;}
+	        <!-- unit-tests -->
+	        <div id="tests">
+               <span class="title">styleJSON Unit Tests</span>
+	            <ul class="unit-tests">
+	                <li class="test">
+	                    <span>styleJSON All Unit Tests</span>
+	                    <em>
+	                        <a href="test/test.html" target="_blank">Launch Tests</a>
+	                    </em>
+	                </li>
 
-            ul {margin:10px 0 0 15px; font-family: 'Terminal Dosis', sans-serif; list-style-type: none; font-size: 14px;}
-                ul li { margin:5px 0 0 10px;}
-                    ul li span { clear: right; }
+	                <li class="test">
+	                    <span>styleJSON.Context object [mainly for internal use]</span>
+	                    <em>
+	                        <a href="test/test.html?filter=styleJSON.Context%20object%20%5Bmainly%20for%20internal%20use%5D%3A" target="_blank">Launch Tests</a>
+	                    </em>
+	                </li>
 
-           	ul.levels li span.id { color: blue; }
-           	ul.levels li span.title { position: relative; left: 20px; }
-        </style>
-    </head>
-    <body>
-    	<div class="heading">Demos<span class="version">styleJSON - v1.0</span></div>
+	                <li class="test">
+	                    <span>styleJSON object data-source</span>
+	                    <em>
+	                        <a href="test/test.html?filter=styleJSON%20object%20data-source%3A" target="_blank">Launch Tests</a>
+	                    </em>
+	                </li>
 
-    	<div class="demobtn"><input type="button" id="demo1" value="Demo 1" /> Fetch JSON data-source</div>
-        <div class="demo root"></div>
+	                <li class="test">
+	                    <span>styleJSON masks' tests</span>
+	                    <em>
+	                        <a href="test/test.html?filter=styleJSON%20masks'%20tests%3A" target="_blank">Launch Tests</a>
+	                    </em>
+	                </li>
 
-    	<div class="demobtn"><input type="button" id="demo2" value="Demo 2" /></div>
-        <div class="demo root2"></div>
+	                <li class="test">
+	                    <span>styleJSON JIT object-data source speed tests</span>
+	                    <em>
+	                        <a href="test/test.html?filter=styleJSON%20JIT%20object-datasource%20speed%20tests%3A" target="_blank">Launch Tests</a>
+	                    </em>
+	                </li>
+	            </ul>
+           </div>
 
-    	<div class="demobtn"><input type="button" id="demo3" value="Demo 3" /></div>
-        <div class="demo root3"></div>
+        </div>
 
-    	<div class="demobtn"><input type="button" id="demo4" value="Demo 4" /></div>
-        <div class="demo root4"></div>
+        <!-- logo -->
+        <div class="logo">
+            <span class="style">style</span><span class="json">JSON<sup>2</sup></span>
+            <ul></ul>
+        </div>
 
-    	<div class="demobtn"><input type="button" id="demo5" value="Demo 5" /></div>
-        <div class="demo root5"></div>
-    </body>
+        <footer class="hide">
+            <div>&copy; Daniel Brooks 2011-2012</div>
+        </footer>
+	</body>
 </html>

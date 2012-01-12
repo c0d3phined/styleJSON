@@ -1,0 +1,103 @@
+{
+    "author": "Daniel Brooks",
+    "date": "/Date(1314151709000)/",
+    "data" : {
+        "title": "Some Web Skills",
+        "items":[
+            {
+                "title" : "javascript",
+                "experience" : [
+                    {
+                        "title" : "Javascript",
+                        "time": "8-9 years",
+                        "text" : "My favorite language. Enjoy playing with concepts such as inheritance, class structure, and prototyping.",
+                        "projects" : null
+                    },
+                    {
+                        "title" : "jQuery",
+                        "time" : "nearly 2 years",
+                        "text" : "jQuery plugins, jQuery-laden web apps, and even native-like apps for <a href='http://polycom.com'>Polycom</a> business phones.",
+                        "projects" : null
+                    },
+                    {
+                        "title" : "prototype",
+                        "time" : "1 year+",
+                        "text":"",
+                        "projects" : null
+                    }
+                ]
+            },
+            {
+                "title" : "Java",
+                "experience" : [
+                    {
+                        "title" : "Java (Android)",
+                        "time": "1-2 years",
+                        "text": null,
+                        "projects" : null
+                    },
+                    {
+                        "title" : "Java Applets",
+                        "time": "little",
+                        "text" : "Mostly worked on applications for r&d and for fun.",
+                        "projects" : null
+                    }
+                ]
+            },
+            {
+                "title" : "Microsoft .NET Framework",
+                "experience" : [
+                    {
+                        "title" : "Silverlight",
+                        "time": "2+ years",
+                        "text":null,
+                        "projects" : [
+                            {
+                                "company":"<a href='http://some-company.com' target='_blank'>Some Company</a>",
+                                "name": "A .NET Web App",
+                                "desc": "Dashboard for a group of company administrators.",
+                                "ref" : "<a href='http://anotherco.com/index.html' target='_blank'>Another Company</a>"
+                            },
+                            {
+                                "company":"<a href='http://some-company.com' target='_blank'>Some Company</a>",
+                                "name": "Web App",
+                                "desc": "Yet another dashboard.",
+                                "ref" : "<a href='http://anotherco.com/index.html' target='_blank'>Another Company</a>"
+                            },
+                            {
+                                "company":"<a href='http://some-company.com' target='_blank'>Some Company</a>",
+                                "name": "Silverlight App",
+                                "desc": "Another content-driven dashboard.",
+                                "ref" : "<a href='http://anotherco.com/index.html' target='_blank'>Another Company</a>"
+                            }
+                        ]
+                    },
+                    {
+                        "title" : ".ASPX",
+                        "time": "2+ years",
+                        "text":null,
+                        "projects" : [
+                            {
+                                "company":"<a href='http://some-company.com' target='_blank'>Some Company</a>",
+                                "name": "Dashboard Administrators",
+                                "desc": "Administration software to administer the content for the Silverlight Dashboards.",
+                                "info" : "<a href='http://anotherco.com/index.html' target='_blank'>Another Company</a>"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "title" : "PHP",
+                "experience" : [
+                    {
+                        "title" : "Many side & contract projects, both mundane and interesting",
+                        "time" : "5+ years",
+                        "text" : "Began web development with PHP and still one of my favorite languages to this day.",
+                        "projects" :null
+                    }
+                ]
+            }
+        ]
+    }
+}

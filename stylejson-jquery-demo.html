@@ -4,17 +4,16 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>styleJSON</title>
 
-        <link href="css/demos.css" type="text/css" rel="Stylesheet" />
+        <link href="res/css/demos.css" type="text/css" rel="Stylesheet" />
         <link href='http://fonts.googleapis.com/css?family=Terminal+Dosis' rel='stylesheet' type='text/css'>
 
         <script defer="defer" src="http://code.jquery.com/jquery-1.7.min.js" type="text/javascript">
             jQuery.holdReady( true );
         </script>
 
-        <script defer="defer" type="text/javascript" src="js/styleJSON.js"></script>
-        <script defer="defer" type="text/javascript" src="js/styleJSON.jQuery.addon.js"></script>
-        <script defer="defer" type="text/javascript" src="js/demo.js">
-            console.log('demo-loaded');
+        <script defer="defer" type="text/javascript" src="bin/styleJSON.min.js"></script>
+        <script defer="defer" type="text/javascript" src="bin/styleJSON.jQuery.addon.min.js"></script>
+        <script defer="defer" type="text/javascript" src="res/js/jquery-demo.js">
             jQuery.holdReady( false );
         </script>
 
@@ -35,9 +34,7 @@
         <div class="demo root4"></div>
 
         <div class="demobtn"><input type="button" id="demo5" value="Demo 5" /><input type="button" id="reset5" value="Reset" /> 
-           Date parsing example -- fetches & loads <code>date.format.js</code> by ajax (jQuery.getScript).<br/>
-           Also demonstrating using the new default, a custom function used to format the Date and append to the element in your own way.<br/>
-           <code>$.styleJSON.defaults.fnFormatDate</code>
+           Date parsing example -- fetches & loads <code>date.format.js</code>by XHR.<br/>
         </div>
         <div class="demo root5"></div>
     </body>

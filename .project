@@ -10,8 +10,25 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>com.googlecode.jslint4java.eclipse.jsLintBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
+		<nature>com.googlecode.jslint4java.eclipse.jsLintNature</nature>
 	</natures>
+	<filteredResources>
+		<filter>
+			<id>1324636221912</id>
+			<name></name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-true-nbproject</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
 </projectDescription>

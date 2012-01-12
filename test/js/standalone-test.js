@@ -1,29 +1,33 @@
 (function(d){
 
-	/* test id */
-	var qnit = 'qunit-fixture',
+	/*jslint sub: true, debug: true, white: false, passfail: false, windows: true */
+
+	'use strict';
 
 	/* styleJSON Context fn */
-		ctx = styleJSON.Context,
+	var ctx = styleJSON.Context,
+
+	/* test selector */
+		qnit = 'qunit-fixture',
 
 	/* utility fns */
-	   	 // http://jdev.blogsome.com/2006/08/18/compact-script-to-calculate-script-execution-time/
+		// http://jdev.blogsome.com/2006/08/18/compact-script-to-calculate-script-execution-time/
 		_stopwatch = {
 			d:null,
 			time:null,
- 			start:function (){
-	   	        this.d = new Date();
-	   	        this.time = this.d.getTime();
- 			},
-   	    	getTime: function (){
-   	    		this.d = new Date();
-	   	    	return (this.d.getTime()-this.time);
-   	    	}
-   	 	},
+			start:function (){
+				this.d = new Date();
+				this.time = this.d.getTime();
+			},
+			getTime: function (){
+				this.d = new Date();
+				return (this.d.getTime()-this.time);
+			}
+		},
 		_teardown= function(){
-        	// reset styleJSON element id so the data is not re-used by the plugin.
-        	document.getElementById('qunit-fixture').setAttribute('sj-id', '' );
-        },
+			// reset styleJSON element id so the data is not re-used by the plugin.
+			document.getElementById('qunit-fixture').setAttribute('sj-id', '' );
+		},
 		make = function( what ) { return document.createElement( what ); };
 
 
@@ -182,39 +186,33 @@
 			sj : styleJSON,
 			style: 
             {
-                "div":"name"
+                "div":"name",
                 // push down into furthest array
-                ,key : "test.more.data"
-                ,data: {
-                	span : ["id","info"]
-                }
+                key : "test.more.data",
+                data: { span : ["id","info"] }
             },
 
             /* multiclass style */
             'style multiclass': 
             {
-                "div":"name"
+                "div":"name",
                 // push down into furthest array
-                ,key : "test.more.data"
-                ,data: {
-                	span : ["id another-class","info text"]
-                }
+                key : "test.more.data",
+                data: { span : ["id another-class","info text"] }
             },
 
            /* dates style */
             'style_dates': 
             {
-                "div":"desc"
-                , dates: {
-                	div : ["ISO8601","dotNETstyle"]
-                }
+                "div":"desc",
+                dates: { div : ["ISO8601","dotNETstyle"] }
             },
 
             /* static array data */
 			'static array': [
-		        { "id": 0123456789, "info": "some data" },
-		        { "id": 0123456788, "info": "some more data" },
-		        { "id": 0123456787, "info": "yet, even more data" }
+		        { "id": 70123456789, "info": "some data" },
+		        { "id": 80123456788, "info": "some more data" },
+		        { "id": 90123456787, "info": "yet, even more data" }
 	        ],
 
 	        datedata: {
@@ -227,7 +225,7 @@
 
 	        teardown:_teardown,
 
-	   	 	stopwatch : _stopwatch
+	        stopwatch : _stopwatch
 		}
 	);
 
@@ -236,7 +234,7 @@
 		var objects = [], i, sub, array = this['static array'], max = 150, alen = array.length, x, li,
 			o = {"name" : "Daniel Brooks","test" : {"more" : {"data":[]}}};
 
-		for( i = 0; i < max; i++ ) for( x = 0; x < alen; x++ ) objects.push( array[x] ); ;
+		for( i = 0; i < max; i++ ) for( x = 0; x < alen; x++ ) objects.push( array[x] );
 
 		o.test.more.data = objects; // test more data pls
 
@@ -244,7 +242,7 @@
 		this.sj.init( sub, o, this.style, {
 				maxnum : max,
 				completed:function(data, style, ele){
-					equals( ele.children('ul').at(0).children().length, max, '150 li elements created' );
+					equal( ele.children('ul').at(0).children().length, max, '150 li elements created' );
 					ok( li = ele.children('ul').at(0).children('li').at(0), 'first <li></li> element pulled out of the 150 [ ele.children(\'ul\').at(0).children(\'li\').at(0) ]' );
 					equal( li.children('span').children().length, 2, 'each <li></li> is supposed to have two child nodes' );
 					equal( li.children('span').at(1).text(), 'some data', 'test the equality of text from the first li element\'s first child\'s text' );
@@ -261,7 +259,7 @@
 		sub = document.getElementById( qnit );
 		this.sj.init( sub, o, this['style multiclass'], {
 				completed:function(data, style, ele){
-					equals( ele.children('ul').at(0).children().length, 3, '3 li elements created' );
+					equal( ele.children('ul').at(0).children().length, 3, '3 li elements created' );
 					ok( li = ele.children('ul').at(0).children('li').at(0), 'first <li></li> element pulled out of the 150 [ ele.children(\'ul\').at(0).children(\'li\').at(0) ]' );
 					equal( n = li.children('span').children().length, 2, 'each <li></li> is supposed to have two children nodes' );
 					equal( li.children('span').at(0).attr('class').split(' ').length, 2, 'are there two classes on the element?' );
@@ -276,10 +274,10 @@
 		expect(1);
 		var sub = document.getElementById( qnit );
 
-		this.sj.init( sub, this.datedata, this['style_dates'], {
+		this.sj.init( sub, this.datedata, this.style_dates, {
+				dateFormatPath: '../lib/date.format.js',
 				completed:function(data, style, ele){
 					ok( typeof dateFormat === 'function', 'typeof dateFormat === \'function\'.  dateFormat library was loaded successfully.' );
-//					debugger;
 					start();
 //					equals( ele.children('ul').at(0).children().length, 3, '3 li elements created' );
 //					ok( li = ele.children('ul').at(0).children('li').at(0), 'first <li></li> element pulled out of the 150 [ ele.children(\'ul\').at(0).children(\'li\').at(0) ]' );
@@ -296,7 +294,7 @@
 		var sub = document.getElementById( qnit );
 		this.sj.init( sub, { link : "http:\/\/t.co\/xMmYW2Tv" }, { div : 'link' }, {
 				completed:function(data, style, ele){
-					ok( ele.children('div').at(0).html() == "<a href=\"http://t.co/xMmYW2Tv\">http://t.co/xMmYW2Tv</a>", 'raw link transformed into <a href=\"http://t.co/xMmYW2Tv\">http://t.co/xMmYW2Tv</a>' );
+					ok( ele.children('div').at(0).html() == "<a target=\"_blank\" href=\"http://t.co/xMmYW2Tv\">http://t.co/xMmYW2Tv</a>", 'raw link transformed into <a target=\"_blank\" href=\"http://t.co/xMmYW2Tv\">http://t.co/xMmYW2Tv</a>' );
 				}
 			}
 		);
@@ -307,7 +305,7 @@
 		expect(1);
 		var sub = document.getElementById( qnit );
 		this.sj.init( sub, { link : "<a href=\"http:\/\/t.co\/xMmYW2Tv\" target=\"_blank\">Ron Paul Over 30 Years</a>" }, { div : 'link' }, {
-				completed:function(data, style, ele){debugger;
+				completed:function(data, style, ele){
 					var html = ele.children('div').at(0).html();
 					ok( html == data.link, 'HTML link used from raw data : '+ data.link );
 				}
@@ -324,12 +322,10 @@
 		sj : styleJSON,
 		style: 
         {
-            "div":"name"
+            "div":"name",
             // push down into furthest array
-            ,key : "test.more.data"
-            ,data: {
-            	span : ["id","info"]
-            }
+            key : "test.more.data",
+            data: { span: ["id", "info"] }
         },
 
 		data: {
@@ -375,8 +371,8 @@
 					ok( span1 = li.children('span').at(0), 'child at index 0 exists' );
 					ok( span2 = li.children('span').at(1), 'child at index 1 exists' );
 
-					var el = span1.ele, ev = el.trackedEvents, e, n, x = 0;
-					for( var e in ev ) {
+					var el = span1.ele, ev = el.trackedEvents, e, n, nlen, x = 0;
+					for( e in ev ) {
 						x++;
 						if ( ev[e].length > 0 ) for( n=0, nlen = ev[e].length; n < nlen; n++) el[ e ]();
 					}
@@ -398,6 +394,7 @@
 					}
 				},
 				completed:function(data, style, ele){
+					var li, span1;
 					ok( li = ele.children('ul').at(0).children('li').at(0), 'first <li></li> element pulled out of the 150 [ ele.children(\'ul\').at(0).children(\'li\').at(0) ]' );
 					ok( span1 = li.children('span').at(0), 'child at index 0 exists' );
 					equal( span1.html(), expected, 'innerText = '+expected +'. \nSpecial mask succeeded.');
@@ -412,47 +409,32 @@
  * styleJSON object data-source speed tests
  */
 	module( 'styleJSON JIT object-datasource speed tests',{
-        teardown:_teardown,
-    	style:
-    	{
+        style:
+        {
 			span : ["date month day year", "storeinfo"],
 			div : {
 				key : "data.authors",
 				authors : {
 					"div" : ["title","isbn10","lang"],
 					"a" : "link"
-    			}
+				}
 			}
-    	},
-    	data:
-		{
+        },
+        data:
+        {
 			"storeinfo" : "A Random Bookstore",
 			"date" : "\/Date(1320540472000)\/",
 			"data" : {
-				"authors" : [
-    	           {
-    	               "title": "The Creature From Jekyll Island",
-    	               "isbn10" : 0912986212,
-    	               "lang": "English",
-    	               "link" : "http:\/\/link\/to\/book\/"
-    	           },
-    	           {
-    	               "title": "Brave New World",
-    	               "isbn10" : 0060850523,
-    	               "lang": "English",
-    	               "link" : "http:\/\/link\/to\/book\/"
-    	           },
-    	           {
-    	               "title": "Confessions of an Economic Hitman",
-    	               "isbn10" : 0452287081,
-    	               "lang": "English",
-    	               "link" : "http:\/\/link\/to\/book\/"
-    	           }
-	           ]
+				"authors" : 
+				[
+		             { "title" : "The Creature From Jekyll Island", "isbn10" : 10912986212, "lang" : "English", "link" : "http:\/\/link\/to\/book\/" },
+		             { "title": "Brave New World", "isbn10" : 20060850523, "lang": "English", "link" : "http:\/\/link\/to\/book\/" },
+		             { "title":"Confessions of an Economic Hitman", "isbn10" : 30452287081, "lang":"English", "link" : "http:\/\/link\/to\/book\/" }
+	             ]
 			}
-		},
+        },
         teardown:_teardown,
-   	 	stopwatch : _stopwatch
+        stopwatch : _stopwatch
 	});
 
 
@@ -484,8 +466,8 @@
 					"div":["title","desc"]
 				}
 			},
-			failfile: '../../data/nofile.json',
-			data: '../../data/arraydata.simple.json',
+			failfile: '../res/data/nofile.json',
+			data: '../res/data/arraydata.simple.json',
 	        teardown:_teardown
 		}
 	);
@@ -496,27 +478,20 @@
 		var demo1 = document.getElementById( qnit ), 
 			sj = styleJSON.init( demo1, this.data, this.style,
 				{
-		         	completed: function(a,b,c){
-		         		deepEqual( demo1, c.ele, "selector element & styleJSON Context" );
+				completed: function(a,b,c){
+					deepEqual( demo1, c.ele, "selector element & styleJSON Context" );
 
-		         		var ul = c.children('ul').at( c.children().length-1 );
+					var ul = c.children('ul').at( c.children().length-1 );
 
-		         		equal( ul.ele.tagName.toLowerCase(), 'ul', "unordered list element exists" );
-		         		equal( ul.children().length, 3, "number of list items are equal to number of objects in data source" );
+					equal( ul.ele.tagName.toLowerCase(), 'ul', "unordered list element exists" );
+					equal( ul.children().length, 3, "number of list items are equal to number of objects in data source" );
 
-		         		equal( ul.children('li').at(0).children().length, 2, "number items in list." );
-		         		equal( ul.children('li').at(0).children('div').at(0).text(), "Item One", "text in the first element node of the first list." );
-		         		start();
-		         	}
+					equal( ul.children('li').at(0).children().length, 2, "number items in list." );
+					equal( ul.children('li').at(0).children('div').at(0).text(), "Item One", "text in the first element node of the first list." );
+					start();
 				}
-			);
+			});
 		}
 	);
-
-//	asyncTest( "- purposely failed remote data test", function(){
-//		expect(1);
-//		var file = this.failfile, style = this.style;
-//		ok( styleJSON.init( qnit, file, style, function(a,b,c){ }) );
-//	});
 
 })(document, undefined);

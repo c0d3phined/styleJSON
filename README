@@ -1,0 +1,8 @@
+/*
+    styleJSON README
+*/
+
+http://codephined.com/
+
+styleJSON is a light script, at around 12KB minified, that can 'style' a JSON data-source by supplying a simple, hierarchical object.
+

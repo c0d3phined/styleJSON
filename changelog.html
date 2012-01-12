@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Changelog</title>
+
+        <link type="text/css" href="res/css/style.css" rel="Stylesheet" />
+	</head>
+	<body>
+
+        <div class="nav">
+            <span><a class="home" href="index.html"><- back to index</a></span>
+            <span><a class="online" target="_blank" href="http://codephined.com/projects/jquery-plugin-style-json-changelog-updates/">see here for up-to-date Changelog</a></span>
+        </div>
+
+        <br/>
+        <table class="changelog" cellspacing="5px">
+            <caption>Changelog</caption>
+            <tbody>
+                <tr class="header">
+                    <td class="header" style="width: 50px;">Bug/Change</td>
+                    <td class="header" style="width:auto;">Description</td>
+                    <td class="header" style="width: 100px;">Date</td>
+                </tr>
+                <tr>
+                    <td>BUGFIX/Update</td>
+                    <td>
+                        Now properly handles links ( parsed into <code>&lt;a&gt;</code> tags ).<br/>
+                        Added default property <code>$.styleJSON.defaults.linkWrapTag</code> which is by default set to <code>"div"</code>.
+                    </td>
+                    <td>Nov 12, 2011</td>
+                </tr>
+                <tr>
+                    <td>BUGFIX</td>
+                    <td>
+                        Fixed creation of empty nodes.  It was a rare occasion but occurred before creating a list element corresponding to an array in the data.
+                    </td>
+                    <td>Nov 12, 2011</td>
+                </tr>
+                <tr>
+                    <td>Update</td>
+                    <td>
+                        Ability to toggle between fetching <code>date.format.js</code> by <code>jQuery.getScript</code>, or by <code>&lt;script ... /&gt;</code> tags, using HTML5's <code>async</code> attribute.  
+                        The <code>&lt;script /&gt;</code> tag method is the default and preferred if your browser supports the HTML5 <code>async</code> property.<br/><br/>
+                        By setting the flag <code>useDateFormatAjaxLoad</code> to <code>true</code><br/>
+                        The script will fetch the script by ajax, using the path specified by the <code>dateFormatPath</code> property.<br/>
+                        By default the <code>useDateFormatAjaxLoad</code> property is set to <code>false</code>.
+                    </td>
+                    <td>Nov 6, 2011</td>
+                </tr>
+                <tr>
+                    <td>Update</td>
+                    <td>
+                        General algorithm and structure update.  Improved parsing time.<br/>
+                        One noticable issue is the delay when adding an array of elements.  This is because the parent element of the array is appended at the end of the operation, thus appearing to lag...<br/>
+                    </td>
+                    <td>Nov 6, 2011</td>
+                </tr>
+                <tr>
+                    <td>BUGFIX</td>
+                    <td>Multiple "GET" on same data-source when selector matches several records.</td>
+                    <td>Nov 6, 2011</td>
+                </tr>
+                <tr>
+                    <td>BUGFIX</td>
+                    <td>
+                    <div>
+                        <code>Line 294-296 style is undefined</code>
+                    </div>
+                    <code>
+                    if ( !len ) {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return $('body').style( json, template );<br/>
+                    }
+                    </code>
+                    </td>
+                    <td>Nov 7, 2011</td>
+                </tr>
+                <tr>
+                    <td>BUGFIX</td>
+                    <td>parsed date over-written with original date format string.</td>
+                    <td>Nov 6, 2011</td>
+                </tr>
+                <tr>
+                    <td>Version</td>
+                    <td>Version 1.2 Release</td>
+                    <td>Nov 3, 2011</td>
+                </tr>
+                <tr>
+                    <td>Date parsing</td>
+                    <td>styleJSON will now accept and parse a formatted Date string (ex. "/Date(1314151709000)/") into a date object.  By setting the defaults you can specify the path to the popular <a href="http://blog.stevenlevithan.com/archives/date-time-format" target="_blank">dateFormat</a> script, as well as the desired formatting you want to format the date to.<br/>
+                        You can set the defaults explicitly before executing styleJSON like below:<br/>
+                        <div class="codes">
+                            <code>$.styleJSON.defaults.dateFormat = "dddd, mmmm d, yyyy";</code><br/>
+                            <code>$.styleJSON.defaults.dateFormatPath = 'js/date.format.js';</code><br/>
+                            <code>$.styleJSON.defaults.useDateFormat = true;</code><br/>
+                        </div>
+                        If you had not included the Date Format script in the page via <code>&lt;script ... /&gt;</code> tags, styleJSON will perform a GET (jQuery.getScript) to load the script at run-time.
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>Multi-class support</td>
+                    <td>Ability to apply multiple classes </td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>Version</td>
+                    <td>Version 1.0 Release</td>
+                    <td>Oct 31, 2011</td>
+                </tr>
+            </tbody>
+        </table>
+
+	</body>
+</html>

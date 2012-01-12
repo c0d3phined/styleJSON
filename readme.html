@@ -1,10 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>styleJSON 1.2 - Readme</title>
 
-		<link type="text/css" href="css/style.css" rel="Stylesheet" />
+		<link type="text/css" href="res/css/style.css" rel="Stylesheet" />
 	</head>
 	<body>
 
@@ -29,8 +29,8 @@
 								better demos. ( coming soon ) 
 							</li>
 							<li>
-								BUGFIX 001: if multiple elements matched by the jQuery selector engine, styleJSON will make the amount of GET requests that the selector engine matched.
-								In other words, if styleJSON was applied on 3 <code>div</code>'s elements, the plugin will initiate 3 GET requests.
+								<s>BUGFIX 001: if multiple elements matched by the jQuery selector engine, styleJSON will make the amount of GET requests that the selector engine matched.
+								In other words, if styleJSON was applied on 3 <code>div</code>'s elements, the plugin will initiate 3 GET requests.</s>
 							</li>
 							<li>
 								general tune-up of the algorithm. 
@@ -68,60 +68,14 @@
 			<tbody>
 				<tr>
 					<td>
-						<div class="text">
+						<!-- <div class="text">
 							
 						</div>
-						<div class="heading">TODO:</div><br />
+						<div class="heading">TODO:</div><br /> -->
 						<ul>
-							<li>
-								<span class="bugnum">BUG 001</span>: if multiple elements matched by the jQuery selector engine, styleJSON will make the amount of GET requests that the selector engine matched.
-								In other words, if styleJSON was applied on 3 <code>div</code>'s elements, the plugin will initiate 3 GET requests.
-							</li>
+							<li>Report any bugs found please.&nbsp;</li>
 						</ul>
 					</td>
-				</tr>
-			</tbody>
-		</table>
-
-		<br/>
-		<hr size="1" />
-		<br/>
-
-		<table class="changelog" cellspacing="5px">
-			<caption>Changelog</caption>
-			<tbody>
-				<tr class="header">
-					<td class="header" style="width: 50px;">Bug/Change</td>
-					<td class="header" style="width:auto;">Description</td>
-					<td class="header" style="width: 100px;">Date</td>
-				</tr>
-				<tr>
-					<td>Version</td>
-					<td>Version 1.2 Release</td>
-					<td>Nov 3, 2011</td>
-				</tr>
-				<tr>
-					<td>Date parsing</td>
-					<td>styleJSON will now accept and parse a formatted Date string (ex. "/Date(1314151709000)/") into a date object.  By setting the defaults you can specify the path to the popular <a href="http://blog.stevenlevithan.com/archives/date-time-format" target="_blank">dateFormat</a> script, as well as the desired formatting you want to format the date to.<br/>
-						You can set the defaults explicitly before executing styleJSON like below:<br/>
-						<div class="codes">
-							<code>$.styleJSON.defaults.dateFormat = "dddd, mmmm d, yyyy";</code><br/>
-							<code>$.styleJSON.defaults.dateFormatPath = 'js/date.format.js';</code><br/>
-							<code>$.styleJSON.defaults.useDateFormat = true;</code><br/>
-						</div>
-						If you had not included the Date Format script in the page via <code>&lt;script ... /&gt;</code> tags, styleJSON will perform a GET (jQuery.getScript) to load the script at run-time.
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<tr>
-					<td>Multi-class support</td>
-					<td>Ability to apply multiple classes </td>
-					<td>&nbsp;</td>
-				</tr>
-				<tr>
-					<td>Version</td>
-					<td>Version 1.0 Release</td>
-					<td>Oct 31, 2011</td>
 				</tr>
 			</tbody>
 		</table>
